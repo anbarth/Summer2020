@@ -16,11 +16,13 @@ left = -10
 right = 10
 
 # dimension of discretized position space
-D = 80
+D = 40
 
 # options for number of random matrices to avg.
-#Nlist = [10,100,500,1000,2500,5000] 
-Nlist = [100]
+Nlist = [10,100,500,2500,5000] 
+
+# number of trials to take for each value of N
+trials = 25
 
 # construct the phi and psi matrices
 psi = np.zeros((D,1))
@@ -47,16 +49,21 @@ for N in Nlist:
     # first entry in the row is N
     results = [N]
 
-    runningTot = 0
-    for i in range(N):
-        zeta = [[random.choice([-1,1])] for i in range(D)]
-        phizeta = np.matmul(phi, zeta) # <phi|z>
-        zetapsi = np.matmul(np.transpose(zeta), psi) # <z|psi>
-        prod = phizeta * zetapsi
-        runningTot = runningTot + prod
+    for j in range(trials):
+        runningTot = 0
+        for i in range(N):
+            zeta = [[random.choice([-1,1])] for i in range(D)]
+            phizeta = np.matmul(phi, zeta) # <phi|z>
+            zetapsi = np.matmul(np.transpose(zeta), psi) # <z|psi>
+            prod = phizeta * zetapsi
+            runningTot = runningTot + prod
 
-    runningTot = runningTot*(1/N) 
-    print(runningTot[0][0])
-    
+        runningTot = runningTot*(1/N) 
+        results.append(runningTot[0][0])
     
     resultsTable.append(results)
+
+with open('overlaps.csv','w',newline='') as csvFile:
+    writer = csv.writer(csvFile, delimiter=',')
+    for row in resultsTable:
+        writer.writerow(row)
