@@ -3,8 +3,9 @@ import numpy as np
 import csv
 import scipy.special
 import math
+import time
 
-
+tic = time.perf_counter()
 random.seed()
 
 # choose two SHO energy levels
@@ -12,14 +13,15 @@ n1 = 1
 n2 = 2
 
 # bounds of discretized position space
-left = -10
-right = 10
+left = -20
+right = 20
 
 # dimension of discretized position space
-D = 40
+dx = 0.025
+D = int((right-left)/dx)
 
 # options for number of random matrices to avg.
-Nlist = [10,100,500,2500,5000] 
+Nlist = [10,50,250,1250,5000] 
 
 # number of trials to take for each value of N
 trials = 25
@@ -31,7 +33,6 @@ phi = np.zeros((1,D))
 norm1 = 0
 norm2 = 0
 
-dx = (right-left)/D
 x = left
 for i in range(D):
     psi[i][0] = math.exp(-1*x*x)*scipy.special.eval_hermite(n1, x)
@@ -67,3 +68,6 @@ with open('overlaps.csv','w',newline='') as csvFile:
     writer = csv.writer(csvFile, delimiter=',')
     for row in resultsTable:
         writer.writerow(row)
+
+toc = time.perf_counter()
+print("runtime "+str(toc-tic))
