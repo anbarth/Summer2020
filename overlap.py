@@ -4,6 +4,8 @@ import csv
 import scipy.special
 import math
 import time
+import statistics
+import matplotlib.pyplot as plt
 
 tic = time.perf_counter()
 random.seed()
@@ -17,14 +19,14 @@ left = -20
 right = 20
 
 # dimension of discretized position space
-dx = 0.025
+dx = 5
 D = int((right-left)/dx)
 
 # options for number of random matrices to avg.
 Nlist = [10,50,250,1250,5000] 
 
 # number of trials to take for each value of N
-trials = 25
+trials = 10
 
 # construct the phi and psi matrices
 psi = np.zeros((D,1))
@@ -46,9 +48,11 @@ phi = phi*(1/math.sqrt(norm2))
 
 resultsTable = []
 for N in Nlist:
-    # a row of results to record in my table
-    # first entry in the row is N
+    # a row of results to record in my table, in format:
+    # 0 |  1   |        ...             | -3  |   -2    |   -1
+    # N | ln N | ... overlap trials ... | avg | std dev | ln std dev
     results = [N]
+    results.append(np.log(N))
 
     for j in range(trials):
         runningTot = 0
@@ -62,12 +66,31 @@ for N in Nlist:
         runningTot = runningTot*(1/N) 
         results.append(runningTot[0][0])
     
+    # add summary statistics to this row of the table
+    # average overlap:
+    results.append(statistics.mean(results[2:])) 
+    # std dev of overlaps:
+    results.append(statistics.stdev(results[2:-1]))
+    # ln std dev of overaps:
+    results.append(np.log(results[-1]))
     resultsTable.append(results)
+
+# construct header rows
+infoRow = ['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']']
+headerRow = ['N','ln N']
+for i in range(trials):
+    headerRow.append(' ')
+headerRow.extend(['avg','sigma','ln sigma'])
 
 with open('overlaps.csv','w',newline='') as csvFile:
     writer = csv.writer(csvFile, delimiter=',')
+    writer.writerow(infoRow)
+    writer.writerow(headerRow)
     for row in resultsTable:
         writer.writerow(row)
+
+#x = [resultsTable[i][1] for i in range(len(resultsTable))]
+
 
 toc = time.perf_counter()
 print("runtime "+str(toc-tic))
