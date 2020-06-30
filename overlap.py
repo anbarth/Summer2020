@@ -6,6 +6,7 @@ import math
 import time
 import statistics
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 
 tic = time.perf_counter()
 random.seed()
@@ -93,6 +94,20 @@ lnN = [resultsTable[i][1] for i in range(len(resultsTable))]
 lnSigma = [resultsTable[i][-1] for i in range(len(resultsTable))]
 plt.plot(lnN,lnSigma,'.',color='black')
 
+lnN_arr = np.array(lnN).reshape((-1,1))
+lnSigma_arr = np.array(lnSigma)
+model = LinearRegression()
+model.fit(lnN_arr,lnSigma_arr)
+
+slope = model.coef_
+intercept = model.intercept_
+r_sq = model.score(lnN_arr,lnSigma_arr)
+print("slope: "+str(slope))
+print("intercept: "+str(intercept))
+print("R^2: "+str(r_sq))
+
+lnSig_model = slope*lnN_arr + intercept
+plt.plot(lnN,lnSig_model)
 
 toc = time.perf_counter()
 print("runtime "+str(toc-tic))
