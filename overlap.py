@@ -76,8 +76,34 @@ for N in Nlist:
     results.append(np.log(results[-1]))
     resultsTable.append(results)
 
-# construct header rows
-infoRow = ['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']']
+# make a plot of ln sigma vs ln N
+lnN = [resultsTable[i][1] for i in range(len(resultsTable))]
+lnSigma = [resultsTable[i][-1] for i in range(len(resultsTable))]
+plt.plot(lnN,lnSigma,'.',color='black')
+plt.xlabel('ln(N)')
+plt.ylabel('ln(sigma)')
+
+# perform a linear regression on ln sigma vs ln N
+lnN_arr = np.array(lnN).reshape((-1,1))
+lnSigma_arr = np.array(lnSigma)
+model = LinearRegression()
+model.fit(lnN_arr,lnSigma_arr)
+
+# record the results of the lin reg
+slope = model.coef_
+intercept = model.intercept_
+r_sq = model.score(lnN_arr,lnSigma_arr)
+print("slope: "+str(slope[0]))
+print("intercept: "+str(intercept))
+print("R^2: "+str(r_sq))
+
+# display the results of the lin reg on the plot
+lnSig_model = slope*lnN_arr + intercept
+plt.plot(lnN,lnSig_model)
+plt.figtext(.7,.85,'slope: '+str(slope[0])+'\nintercept: '+str(intercept)+'\nR^2: '+str(r_sq))
+
+# now, write all results to a csv
+# construct header row
 headerRow = ['N','ln N']
 for i in range(trials):
     headerRow.append(' ')
@@ -85,29 +111,22 @@ headerRow.extend(['avg','sigma','ln sigma'])
 
 with open('overlaps.csv','w',newline='') as csvFile:
     writer = csv.writer(csvFile, delimiter=',')
-    writer.writerow(infoRow)
+
+    # write specs abt this run
+    writer.writerow(['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
+
+    # write info abt linear regression
+    writer.writerow(["slope",slope[0]])
+    writer.writerow(["intercept",intercept])
+    writer.writerow(["R^2",r_sq])
+
+    # write headers
     writer.writerow(headerRow)
+
+    # write data from all trials
     for row in resultsTable:
         writer.writerow(row)
 
-lnN = [resultsTable[i][1] for i in range(len(resultsTable))]
-lnSigma = [resultsTable[i][-1] for i in range(len(resultsTable))]
-plt.plot(lnN,lnSigma,'.',color='black')
-
-lnN_arr = np.array(lnN).reshape((-1,1))
-lnSigma_arr = np.array(lnSigma)
-model = LinearRegression()
-model.fit(lnN_arr,lnSigma_arr)
-
-slope = model.coef_
-intercept = model.intercept_
-r_sq = model.score(lnN_arr,lnSigma_arr)
-print("slope: "+str(slope))
-print("intercept: "+str(intercept))
-print("R^2: "+str(r_sq))
-
-lnSig_model = slope*lnN_arr + intercept
-plt.plot(lnN,lnSig_model)
 
 toc = time.perf_counter()
 print("runtime "+str(toc-tic))
