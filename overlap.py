@@ -89,8 +89,12 @@ with open('overlaps.csv','w',newline='') as csvFile:
     for row in resultsTable:
         writer.writerow(row)
 
-#x = [resultsTable[i][1] for i in range(len(resultsTable))]
+lnN = [resultsTable[i][1] for i in range(len(resultsTable))]
+lnSigma = [resultsTable[i][-1] for i in range(len(resultsTable))]
+plt.plot(lnN,lnSigma,'.',color='black')
 
 
 toc = time.perf_counter()
 print("runtime "+str(toc-tic))
+plt.show()
+
