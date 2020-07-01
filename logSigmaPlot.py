@@ -2,10 +2,13 @@ import random
 import numpy as np
 import csv
 import math
+import time
+
+# imports that the UCSB computer doesnt support
 from sklearn.linear_model import LinearRegression
 import statistics
 import matplotlib.pyplot as plt
-import time
+
 
 
 def findSlopeAndIntercept(n1,n2,left,right,dx,Nlist,trialsPerN,numGraphs):
@@ -14,25 +17,45 @@ def findSlopeAndIntercept(n1,n2,left,right,dx,Nlist,trialsPerN,numGraphs):
     for i in range(numGraphs):
         results = makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trialsPerN)
         resultsTable.append(results)
-    avgSlope = statistics.mean
-    resultsTable.append()
-    resultsTable = np.transpose(resultsTable)
-    # TODO add avg slope & intercept to table
+    # make a column of averages
+    avgSlope = statistics.mean([resultsTable[i][0] for i in range(1,len(resultsTable))])
+    avgIntercept = statistics.mean([resultsTable[i][1] for i in range(1,len(resultsTable))])
+    avgR2 = statistics.mean([resultsTable[i][2] for i in range(1,len(resultsTable))])
+    
+    # make a column of sigmas
+    sigSlope = statistics.stdev([resultsTable[i][0] for i in range(1,len(resultsTable))])
+    sigIntercept = statistics.stdev([resultsTable[i][1] for i in range(1,len(resultsTable))])
+    sigR2 = statistics.stdev([resultsTable[i][2] for i in range(1,len(resultsTable))])
 
-   
+    resultsTable.append([avgSlope,avgIntercept,avgR2])
+    resultsTable.append([sigSlope,sigIntercept,sigR2])
+
+    resultsTable = np.transpose(resultsTable)
+
+
+    # construct header row
+    headerRow = []
+    for i in range(numGraphs+1):
+        headerRow.append(' ')
+    headerRow.extend(['avg','sigma'])
+
     with open('linregs.csv','w',newline='') as csvFile:
         writer = csv.writer(csvFile, delimiter=',')
 
         # write specs abt this run
         writer.writerow(['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
 
+        # write header
+        writer.writerow(headerRow)
 
         # write data from all trials
         for row in resultsTable:
             writer.writerow(row)
+    
+    
 
         
-# TODO stats isnt for lin reg :0 
+
 def makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trials,showGraph=False,writeToCsv=False,timing=False):
     ### STEP 1: SET UP
     tic = time.perf_counter()
