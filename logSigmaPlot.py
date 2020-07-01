@@ -5,11 +5,14 @@ import scipy.special
 import math
 import statistics
 import matplotlib.pyplot as plt
+import time
 from sklearn.linear_model import LinearRegression
 
 
 
-def makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trials,showGraph=False,writeToCsv=False):
+def makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trials,showGraph=False,writeToCsv=False,timing=False):
+    ### STEP 1: SET UP
+    tic = time.perf_counter()
 
     # dimension of discretized position space
     D = int((right-left)/dx)
@@ -32,6 +35,7 @@ def makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trials,showGraph=False,writeToCsv
     psi = psi*(1/math.sqrt(norm1))
     phi = phi*(1/math.sqrt(norm2))
 
+    ### STEP 2: RUN TRIALS
     resultsTable = []
     for N in Nlist:
         # a row of results to record in my table, in format:
@@ -61,21 +65,23 @@ def makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trials,showGraph=False,writeToCsv
         results.append(np.log(results[-1]))
         resultsTable.append(results)
 
-    # perform a linear regression on ln sigma vs ln N
+    ### STEP 3: REGRESSION
+    # here's the data i wanna work with
     lnN = [resultsTable[i][1] for i in range(len(resultsTable))]
     lnSigma = [resultsTable[i][-1] for i in range(len(resultsTable))]
+    # convert data to suitable format
     lnN_arr = np.array(lnN).reshape((-1,1))
     lnSigma_arr = np.array(lnSigma)
+    # regress!
     model = LinearRegression()
     model.fit(lnN_arr,lnSigma_arr)
-
     # record the results of the lin reg
     slope = model.coef_
     intercept = model.intercept_
     r_sq = model.score(lnN_arr,lnSigma_arr)
 
+    ### STEP 4: OUTPUT
     if writeToCsv:
-        # now, write all results to a csv
         # construct header row
         headerRow = ['N','ln N']
         for i in range(trials):
@@ -100,14 +106,24 @@ def makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trials,showGraph=False,writeToCsv
             for row in resultsTable:
                 writer.writerow(row)
 
+    if timing:
+        toc = time.perf_counter()
+        print("runtime "+str(toc-tic))
+
     if showGraph:
-        plt.plot(lnN,lnSigma,'.',color='black')
+        # titles and labels
         plt.xlabel('ln(N)')
         plt.ylabel('ln(sigma)')
+        plt.title('n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
+        plt.figtext(.6,.75,'slope: '+str(slope[0])+'\nintercept: '+str(intercept)+'\nR^2: '+str(r_sq))
+
+        # plot data
+        plt.plot(lnN,lnSigma,'.',color='black')
+
+        # plot lin reg
         lnSig_model = slope*lnN_arr + intercept
         plt.plot(lnN,lnSig_model)
-        plt.figtext(.6,.75,'slope: '+str(slope[0])+'\nintercept: '+str(intercept)+'\nR^2: '+str(r_sq))
-        plt.title('n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
+
         plt.show()
 
 
