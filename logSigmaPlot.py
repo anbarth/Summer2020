@@ -1,7 +1,6 @@
 import random
 import numpy as np
 import csv
-import scipy.special
 import math
 import statistics
 import matplotlib.pyplot as plt
@@ -20,14 +19,25 @@ def makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trials,showGraph=False,writeToCsv
     # construct the phi and psi matrices
     psi = np.zeros((D,1))
     phi = np.zeros((1,D))
+
+    # make hermite polynomial objects
+    n1_arr = [0]*(n1+1)
+    n1_arr[-1] = 1
+    n2_arr = [0]*(n2+1)
+    n2_arr[-1] = 1
+    herm1 = np.polynomial.hermite.Hermite(n1_arr,[left,right])
+    herm2 = np.polynomial.hermite.Hermite(n2_arr,[left,right])
+    herm1_arr = herm1.linspace(n=D)[1]
+    herm2_arr = herm2.linspace(n=D)[1]
+
     # psi and phi's norm-squareds, so i can normalize later
     norm1 = 0
     norm2 = 0
 
     x = left
     for i in range(D):
-        psi[i][0] = math.exp(-1*x*x)*scipy.special.eval_hermite(n1, x)
-        phi[0][i] = math.exp(-1*x*x)*scipy.special.eval_hermite(n2, x)
+        psi[i][0] = math.exp(-1*x*x)*herm1_arr[i]
+        phi[0][i] = math.exp(-1*x*x)*herm2_arr[i]
         norm1 += psi[i][0]*psi[i][0]
         norm2 += phi[0][i]*phi[0][i]
         x += dx
