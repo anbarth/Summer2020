@@ -2,13 +2,37 @@ import random
 import numpy as np
 import csv
 import math
+from sklearn.linear_model import LinearRegression
 import statistics
 import matplotlib.pyplot as plt
 import time
-from sklearn.linear_model import LinearRegression
 
 
+def findSlopeAndIntercept(n1,n2,left,right,dx,Nlist,trialsPerN,numGraphs):
+    resultsTable = []
+    resultsTable.append(["slope","intercept","R^2"])
+    for i in range(numGraphs):
+        results = makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trialsPerN)
+        resultsTable.append(results)
+    avgSlope = statistics.mean
+    resultsTable.append()
+    resultsTable = np.transpose(resultsTable)
+    # TODO add avg slope & intercept to table
 
+   
+    with open('linregs.csv','w',newline='') as csvFile:
+        writer = csv.writer(csvFile, delimiter=',')
+
+        # write specs abt this run
+        writer.writerow(['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
+
+
+        # write data from all trials
+        for row in resultsTable:
+            writer.writerow(row)
+
+        
+# TODO stats isnt for lin reg :0 
 def makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trials,showGraph=False,writeToCsv=False,timing=False):
     ### STEP 1: SET UP
     tic = time.perf_counter()
