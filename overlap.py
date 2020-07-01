@@ -11,23 +11,25 @@ from sklearn.linear_model import LinearRegression
 tic = time.perf_counter()
 random.seed()
 
+
 # choose two SHO energy levels
 n1 = 1
 n2 = 2
 
 # bounds of discretized position space
-left = -20
-right = 20
+left = -10
+right = 10
 
+# step size
+dx = 0.05
 # dimension of discretized position space
-dx = 5
 D = int((right-left)/dx)
 
 # options for number of random matrices to avg.
 Nlist = [10,50,250,1250,5000] 
 
 # number of trials to take for each value of N
-trials = 10
+trials = 25
 
 # construct the phi and psi matrices
 psi = np.zeros((D,1))
@@ -100,7 +102,8 @@ print("R^2: "+str(r_sq))
 # display the results of the lin reg on the plot
 lnSig_model = slope*lnN_arr + intercept
 plt.plot(lnN,lnSig_model)
-plt.figtext(.7,.85,'slope: '+str(slope[0])+'\nintercept: '+str(intercept)+'\nR^2: '+str(r_sq))
+plt.figtext(.6,.75,'slope: '+str(slope[0])+'\nintercept: '+str(intercept)+'\nR^2: '+str(r_sq))
+plt.title('n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
 
 # now, write all results to a csv
 # construct header row
