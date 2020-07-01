@@ -15,9 +15,9 @@ right = 10
 dx = 2
 
 # options for number of random matrices to avg.
-Nlist = [10,50,250,1250,5000] 
+Nlist = [500] 
 
 # number of trials to take for each value of N
-trials = 25
+trials = 20
 
 makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trials,timing=True,showGraph=True,writeToCsv=True)

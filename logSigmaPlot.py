@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 
 def findSlopeAndIntercept(n1,n2,left,right,dx,Nlist,trialsPerN,numGraphs):
+    tic = time.perf_counter()
     resultsTable = []
     resultsTable.append(["slope","intercept","R^2"])
     for i in range(numGraphs):
@@ -43,7 +44,7 @@ def findSlopeAndIntercept(n1,n2,left,right,dx,Nlist,trialsPerN,numGraphs):
         writer = csv.writer(csvFile, delimiter=',')
 
         # write specs abt this run
-        writer.writerow(['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
+        writer.writerow(['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']. '+str(trialsPerN)+'trials per N'])
 
         # write header
         writer.writerow(headerRow)
@@ -51,6 +52,9 @@ def findSlopeAndIntercept(n1,n2,left,right,dx,Nlist,trialsPerN,numGraphs):
         # write data from all trials
         for row in resultsTable:
             writer.writerow(row)
+    
+    toc = time.perf_counter()
+    print("runtime: "+str(toc-tic))
     
     
 
