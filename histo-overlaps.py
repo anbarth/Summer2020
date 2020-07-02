@@ -4,10 +4,12 @@ import csv
 import math
 import time
 import matplotlib.pyplot as plt
+import statistics
 
-def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,writeToCsv=True,timing=True):
+def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,writeToCsv=True,timing=True,fname='newfig.png'):
     ### STEP 1: SET UP
     tic = time.perf_counter()
+    plt.clf()
 
     # dimension of discretized position space
     D = int((right-left)/dx)
@@ -57,8 +59,6 @@ def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,writeToCsv=Tru
         resultsTable.append(runningTot[0][0])
     
 
-
-
     ### STEP 4: OUTPUT
     if writeToCsv:
 
@@ -77,8 +77,12 @@ def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,writeToCsv=Tru
         print("runtime "+str(toc-tic))
 
     if showGraph:
+        sigma = int( statistics.stdev(resultsTable)*1000 ) / 1000
         plt.hist(resultsTable, bins='auto')
-        plt.show()
+        plt.figtext(.7,.75,'sigma='+str(sigma))
+        plt.savefig(fname)
+        #plt.show()
+
 
 
 n1=1
@@ -87,5 +91,9 @@ left=-20
 right=20
 dx=0.05
 N=50
-trials=25
-makeOverlapsHisto(n1,n2,left,right,dx,N,trials)
+trialsList=[25,50,100,500]
+
+for trials in trialsList:
+    for i in range(3):
+        filename = 'n50t'+str(trials)+'_'+str(i)+'.png'
+        makeOverlapsHisto(n1,n2,left,right,dx,N,trials,fname=filename)
