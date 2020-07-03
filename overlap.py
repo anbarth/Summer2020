@@ -17,7 +17,7 @@ right = 10
 dx = 1
 
 # random matrices to avg.
-N = 100
+N = 200
 
 #########################################################
 
@@ -53,7 +53,9 @@ for i in range(D):
 psi = psi*(1/math.sqrt(norm1))
 phi = phi*(1/math.sqrt(norm2))
 
-
+# find <phi|psi> directly, for reference
+trueOverlap = np.matmul(phi,psi)
+print(trueOverlap[0][0])
 
 overlap = 0
 for i in range(N):

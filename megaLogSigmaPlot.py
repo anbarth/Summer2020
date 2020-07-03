@@ -6,10 +6,12 @@ import time
 
 # imports that the UCSB computer doesnt support
 import statistics
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
 
     
 
-def estimateSigmas(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,timing=True):
+def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,showGraph=True,timing=True):
     ### STEP 1: SET UP
     tic = time.perf_counter()
 
@@ -103,6 +105,22 @@ def estimateSigmas(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,t
         sigResultsTable.append(sigResults)
         avgResultsTable.append(avgResults)
 
+    ### STEP 3: REGRESSION
+
+    # here's the data i wanna work with
+    lnN = [sigResultsTable[i][1] for i in range(len(sigResultsTable))]
+    lnSigma = [sigResultsTable[i][-2] for i in range(len(sigResultsTable))]
+    lnSigma_err = [sigResultsTable[i][-1] for i in range(len(sigResultsTable))]
+    # convert data to suitable format
+    lnN_arr = np.array(lnN).reshape((-1,1))
+    lnSigma_arr = np.array(lnSigma)
+    # regress!
+    model = LinearRegression()
+    model.fit(lnN_arr,lnSigma_arr)
+    # record the results of the lin reg
+    slope = model.coef_
+    intercept = model.intercept_
+    r_sq = model.score(lnN_arr,lnSigma_arr)
 
     ### STEP 3: OUTPUT
     if writeToCsv:
@@ -152,16 +170,32 @@ def estimateSigmas(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,t
         toc = time.perf_counter()
         print("runtime "+str(toc-tic))
 
+    if showGraph:
+        # titles and labels
+        plt.xlabel('ln(N)')
+        plt.ylabel('ln(sigma)')
+        plt.title('n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
+        plt.figtext(.6,.75,'slope: '+str(slope[0])+'\nintercept: '+str(intercept)+'\nR^2: '+str(r_sq))
 
+        # plot data
+        plt.errorbar(lnN,lnSigma,yerr=lnSigma_err,fmt='bo',capsize=4)
+
+        # plot lin reg
+        lnSig_model = slope*lnN_arr + intercept
+        plt.plot(lnN,lnSig_model)
+
+        plt.show()
+
+    return intercept
 
 n1 = 1
-n2 = 3
+n2 = 1
 left = -10
 right = 10
-dx = 1
-Nlist = [10,20,50,100]
+dx = 2
+Nlist = [50,150,500]
 sampleSize = 25
 trials = 10
 
-estimateSigmas(n1, n2, left, right, dx, Nlist, sampleSize, trials)
+findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials)
 
