@@ -1,10 +1,10 @@
-import statistics
 import math
+from myStats import mean, stdev
 # output: slope, intercept, errors on each, R^2
 
 def regress(x_arr, y_arr):
-    y_bar = statistics.mean(y_arr)
-    x_bar = statistics.mean(x_arr)
+    y_bar = mean(y_arr)
+    x_bar = mean(x_arr)
 
     SSxx = 0
     SSxy = 0
