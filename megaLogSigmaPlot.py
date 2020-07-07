@@ -3,10 +3,10 @@ import numpy as np
 import csv
 import math
 import time
+from linReg import regress
 
 # imports that the UCSB computer doesnt support
 import statistics
-from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 
     
@@ -111,16 +111,11 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
     lnN = [sigResultsTable[i][1] for i in range(len(sigResultsTable))]
     lnSigma = [sigResultsTable[i][-2] for i in range(len(sigResultsTable))]
     lnSigma_err = [sigResultsTable[i][-1] for i in range(len(sigResultsTable))]
-    # convert data to suitable format
-    lnN_arr = np.array(lnN).reshape((-1,1))
-    lnSigma_arr = np.array(lnSigma)
+
     # regress!
-    model = LinearRegression()
-    model.fit(lnN_arr,lnSigma_arr)
-    # record the results of the lin reg
-    slope = model.coef_
-    intercept = model.intercept_
-    r_sq = model.score(lnN_arr,lnSigma_arr)
+    (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma)
+
+
 
     ### STEP 3: OUTPUT
     if writeToCsv:
@@ -137,6 +132,10 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
             # write specs abt this run
             writer.writerow(['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
             writer.writerow(['sample size: '+str(sampleSize)])
+
+            # write results of regression
+            writer.writerow(['slope',str(slope),'slope err',str(slope_err)])
+            writer.writerow(['int',str(intercept),'int err',str(intercept_err)])
 
             # write headers
             writer.writerow(sigHeaderRow)
@@ -175,7 +174,7 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
         plt.xlabel('ln(N)')
         plt.ylabel('ln(sigma)')
         plt.title('n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
-        plt.figtext(.6,.75,'slope: '+str(slope[0])+'\nintercept: '+str(intercept)+'\nR^2: '+str(r_sq))
+        plt.figtext(.6,.75,'slope: '+str(slope)+'\nintercept: '+str(intercept)+'\nR^2: '+str(r_sq))
 
         # plot data
         plt.errorbar(lnN,lnSigma,yerr=lnSigma_err,fmt='bo',capsize=4)
@@ -193,7 +192,7 @@ n2 = 1
 left = -10
 right = 10
 dx = 2
-Nlist = [50,150,500]
+Nlist = [50,100,250]
 sampleSize = 25
 trials = 10
 
