@@ -131,7 +131,7 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
 
             # write specs abt this run
             writer.writerow(['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
-            writer.writerow(['sample size: '+str(sampleSize)])
+            writer.writerow(['sample size: '+str(sampleSize)+', '+str(trials)+' trials'])
 
             # write results of regression
             writer.writerow(['slope',str(slope),'slope err',str(slope_err)])
@@ -156,7 +156,7 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
 
             # write specs abt this run
             writer.writerow(['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
-            writer.writerow(['sample size: '+str(sampleSize)])
+            writer.writerow(['sample size: '+str(sampleSize)+', '+str(trials)+' trials'])
 
             # write headers
             writer.writerow(avgHeaderRow)
@@ -188,7 +188,7 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
 
         plt.show()
 
-    return intercept
+    return (intercept, intercept_err)
 
 n1 = 1
 n2 = 1
