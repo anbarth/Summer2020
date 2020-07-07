@@ -174,13 +174,16 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
         plt.xlabel('ln(N)')
         plt.ylabel('ln(sigma)')
         plt.title('n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
-        plt.figtext(.6,.75,'slope: '+str(slope)+'\nintercept: '+str(intercept)+'\nR^2: '+str(r_sq))
+        slope_str = str( int(slope*10000)/10000 ) + ' +/- ' + str( int(slope_err*10000)/10000 )
+        int_str = str( int(intercept*1000)/1000 ) + ' +/- ' + str( int(intercept_err*1000)/1000 )
+        r_sq_str = str( int(r_sq*1000)/1000 )
+        plt.figtext(.6,.75,'slope: '+slope_str+'\nintercept: '+int_str+'\nR^2: '+r_sq_str)
 
         # plot data
         plt.errorbar(lnN,lnSigma,yerr=lnSigma_err,fmt='bo',capsize=4)
 
         # plot lin reg
-        lnSig_model = slope*lnN_arr + intercept
+        lnSig_model = [slope*x + intercept for x in lnN]
         plt.plot(lnN,lnSig_model)
 
         plt.show()
