@@ -4,10 +4,11 @@ import csv
 import math
 import time
 from linReg import regress
+from myStats import mean, stdev
 
 # imports that the UCSB computer doesnt support
-import statistics
-import matplotlib.pyplot as plt
+#import statistics
+#import matplotlib.pyplot as plt
 
     
 
@@ -86,19 +87,19 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
                 overlaps.append(overlap[0][0])
             
             # find average overlap, add to this row of the table
-            avgResults.append(statistics.mean(overlaps)) 
+            avgResults.append(mean(overlaps)) 
             # find std dev of overlaps, add to this row of the table
-            sigResults.append(statistics.stdev(overlaps))
+            sigResults.append(stdev(overlaps))
 
         # finish off this row with some summary statistics
-        sig_avg = statistics.mean(sigResults[2:])
+        sig_avg = mean(sigResults[2:])
         sig_ln_avg = np.log(sig_avg)
-        sig_err = statistics.stdev(sigResults[2:]) / math.sqrt(trials)
+        sig_err = stdev(sigResults[2:]) / math.sqrt(trials)
         sig_ln_avg_err = sig_err/sig_avg
         sigResults.extend([sig_avg, sig_err, sig_ln_avg, sig_ln_avg_err])
 
-        avg_avg = statistics.mean(avgResults[2:])
-        avg_err = statistics.stdev(avgResults[2:]) / math.sqrt(trials)
+        avg_avg = mean(avgResults[2:])
+        avg_err = stdev(avgResults[2:]) / math.sqrt(trials)
         avgResults.extend([avg_avg, avg_err])
 
         # add this row to the table
@@ -194,10 +195,10 @@ n1 = 1
 n2 = 1
 left = -10
 right = 10
-dx = 2
+dx = 4
 Nlist = [50,100,250]
 sampleSize = 25
 trials = 10
 
-findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials)
+findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials, showGraph=False)
 
