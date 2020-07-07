@@ -82,10 +82,9 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
                     zetapsi = np.matmul(np.transpose(zeta), psi) # <z|psi>
                     prod = phizeta * zetapsi
                     overlap =  overlap + prod
-                overlap =  overlap*(1/N) 
+                overlap =  overlap/N 
                 # great! now store the result
                 overlaps.append(overlap[0][0])
-            
             # find average overlap, add to this row of the table
             avgResults.append(mean(overlaps)) 
             # find std dev of overlaps, add to this row of the table
@@ -127,7 +126,8 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
             sigHeaderRow.append(' ')
         sigHeaderRow.extend(['avg','std err','ln avg','err in ln avg'])
 
-        with open('sigma_overlaps.csv','w',newline='') as csvFile:
+        with open('sigma_overlaps.csv','w') as csvFile:
+        #with open('sigma_overlaps.csv','w',newline='') as csvFile:
             writer = csv.writer(csvFile, delimiter=',')
 
             # write specs abt this run
@@ -152,7 +152,8 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
             avgHeaderRow.append(' ')
         avgHeaderRow.extend(['avg','std err'])
 
-        with open('avg_overlaps.csv','w',newline='') as csvFile:
+        with open('avg_overlaps.csv','w') as csvFile:
+        #with open('avg_overlaps.csv','w',newline='') as csvFile:
             writer = csv.writer(csvFile, delimiter=',')
 
             # write specs abt this run
@@ -191,12 +192,13 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
 
     return (intercept, intercept_err)
 
+random.seed()
 n1 = 1
-n2 = 1
+n2 = 2
 left = -10
 right = 10
 dx = 4
-Nlist = [50,100,250]
+Nlist = [10,100,250]
 sampleSize = 25
 trials = 10
 
