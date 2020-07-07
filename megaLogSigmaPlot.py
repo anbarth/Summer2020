@@ -2,7 +2,7 @@ import random
 import numpy as np
 import csv
 import math
-import time
+#import time
 from linReg import regress
 from myStats import mean, stdev
 
@@ -14,7 +14,7 @@ from myStats import mean, stdev
 
 def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,showGraph=True,timing=True):
     ### STEP 1: SET UP
-    tic = time.perf_counter()
+#    tic = time.perf_counter()
 
     # dimension of discretized position space
     D = int((right-left)/dx)
@@ -166,9 +166,9 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
             for row in avgResultsTable:
                 writer.writerow(row)
 
-    if timing:
-        toc = time.perf_counter()
-        print("runtime "+str(toc-tic))
+#    if timing:
+#        toc = time.perf_counter()
+#        print("runtime "+str(toc-tic))
 
     if showGraph:
         # titles and labels
