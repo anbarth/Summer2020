@@ -6,18 +6,18 @@ from logSigmaPlot import makeLogSigmaPlot
 random.seed()
 
 # choose two SHO energy levels
-n1 = 1
-n2 = 3
+n1 = 0
+n2 = 0
 
 # bounds of discretized position space
-left = -10
-right = 10
+left = -12
+right = 12
 
 # step size
-dx = 1
+dx = 2
 
 # random matrices to avg.
-N = 200
+N = 1
 
 #########################################################
 
