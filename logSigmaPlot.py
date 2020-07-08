@@ -76,8 +76,8 @@ def makeLogSigmaPlot(n1,n2,left,right,dx,Nlist,trials,showGraph=False,writeToCsv
     n1_arr[-1] = 1
     n2_arr = [0]*(n2+1)
     n2_arr[-1] = 1
-    herm1 = np.polynomial.hermite.Hermite(n1_arr,[left,right])
-    herm2 = np.polynomial.hermite.Hermite(n2_arr,[left,right])
+    herm1 = np.polynomial.hermite.Hermite(n1_arr,window=[left,right])
+    herm2 = np.polynomial.hermite.Hermite(n2_arr,window=[left,right])
     herm1_arr = herm1.linspace(n=D)[1]
     herm2_arr = herm2.linspace(n=D)[1]
 
