@@ -7,14 +7,14 @@ random.seed()
 
 # choose two SHO energy levels
 n1 = 0
-n2 = 3
+n2 = 2
 
 # bounds of discretized position space
-left = -20
-right = 20
+left = -30
+right = 30
 
 # step size
-dx = 0.05
+dx = 0.005
 
 # random matrices to avg.
 N = 1

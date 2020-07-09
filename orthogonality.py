@@ -11,6 +11,8 @@ def orthogonalityCheck(nMax,dx,bound):
     D = int((right-left)/dx)
 
     for n1 in range(0,nMax):
+        #if n1 != 0:
+        #    continue
         # construct the psi vector...
         psi = np.zeros((D,1))
         # make hermite polynomial object
@@ -29,6 +31,9 @@ def orthogonalityCheck(nMax,dx,bound):
         psi = psi*(1/math.sqrt(norm1))
 
         for n2 in range(n1,nMax):
+            #if n2 != 3:
+            #    continue
+
             # construct the phi vector...
             phi = np.zeros((1,D))
             # make hermite polynomial object
@@ -46,8 +51,13 @@ def orthogonalityCheck(nMax,dx,bound):
             # normalize
             phi = phi*(1/math.sqrt(norm2))
 
-            overlaps[n1][n2] = np.matmul(phi,psi)
+            #print(np.matmul(phi,psi))
+            overlap = np.matmul(phi,psi)
+            if overlap[0][0] <= -0.5:
+                print(str(n1)+" "+str(n2))
+            overlaps[n1][n2] = overlap[0][0]
 
+    #return
     ### make heatmap
     fig, ax = plt.subplots()
     im = ax.imshow(overlaps)

@@ -3,15 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # choose two SHO energy levels
-n1 = 50
+n1 = 2
 n2 = 0
 
 # bounds of discretized position space
-left = -5
-right = 5
+left = -50
+right = 50
 
 # step size
-dx = 0.025
+dx = 0.005
 
 #########################################################
 
@@ -52,7 +52,13 @@ phiN = [x*(1/math.sqrt(norm2)) for x in phi]
 psi = psiN
 phi = phiN
 
-plt.title('n='+str(n1)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
-#plt.plot(domain,herm1_arr)
-plt.hist(domain,bins=len(domain),weights=psi)
+overlap = 0
+for i in range(D):
+    overlap += psi[i] * phi[i]
+print(overlap)
+
+plt.title('n1='+str(n1)+', n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
+plt.plot(domain,psi)
+plt.plot(domain,phi)
+#plt.hist(domain,bins=len(domain),weights=psi)
 plt.show()
