@@ -13,6 +13,7 @@ from myStats import mean, stdev
     
 
 def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,showGraph=True):
+    print("waaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     ### STEP 1: SET UP
 #    tic = time.perf_counter()
 
@@ -92,6 +93,9 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
 
         # finish off this row with some summary statistics
         sig_avg = mean(sigResults[2:])
+        # 0 messes up the log stuff, soooooo
+        if sig_avg == 0:
+            sig_avg = 0.00000000001
         sig_ln_avg = np.log(sig_avg)
         sig_err = stdev(sigResults[2:]) / math.sqrt(trials)
         sig_ln_avg_err = sig_err/sig_avg
@@ -190,7 +194,7 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
 
         plt.show()
 
-    return (intercept, intercept_err)
+    return (slope, slope_err, intercept, intercept_err)
 
 random.seed()
 n1 = 1
@@ -202,5 +206,5 @@ Nlist = [10,100,250]
 sampleSize = 25
 trials = 10
 
-findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials, showGraph=False)
+#findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials, showGraph=False)
 
