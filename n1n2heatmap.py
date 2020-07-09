@@ -7,16 +7,16 @@ from megaLogSigmaPlot import findIntercept
 
 random.seed()
 
-nMax = 5
-nLabel = ['1','','','','5']
+nMax = 3
+nLabel = ['1','2','3']
 
-left = -1
-right = 1
+left = -20
+right = 20
 dx = 1
 
 Nlist = [50,150,500]
-sampleSize = 3
-trials = 3
+sampleSize = 25
+trials = 10
 
 intercepts = np.zeros((nMax,nMax))
 intercept_errs = np.zeros((nMax,nMax))
@@ -24,11 +24,12 @@ intercept_errs = np.zeros((nMax,nMax))
 for n1 in range(1,nMax+1):
     for n2 in range(n1,nMax+1):
         (slope, slope_err, intercept, intercept_err) = findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials,writeToCsv=False,showGraph=False)
+        print(str(slope) + " " + str(intercept))
         #intercept = random.randint(-5,5)
-        intercepts[n1-1][n2-1] = int(intercept*1000)/1000
-        intercept_errs[n1-1][n2-1] = int(intercept_err*1000)/1000
+        intercepts[n1-1][n2-1] = int(intercept*1000)/1000.0
+        intercept_errs[n1-1][n2-1] = int(intercept_err*1000)/1000.0
 
-fig, ax = plt.subplots()
+'''fig, ax = plt.subplots()
 im = ax.imshow(intercepts)
 
 ax.set_xticks(np.arange(len(nLabel)))
@@ -41,8 +42,10 @@ ax.set_yticklabels(nLabel)
 for i in range(nMax):
     for j in range(nMax):
         text = ax.text(j, i, intercepts[i][j], ha="center", va="center", color="w")
+'''
 
-with open('heatmap.csv','w',newline='') as csvFile:
+with open('heatmap.csv','w') as csvFile:
+#with open('heatmap.csv','w',newline='') as csvFile:
     writer = csv.writer(csvFile, delimiter=',')
 
     # write specs abt this run
@@ -51,9 +54,11 @@ with open('heatmap.csv','w',newline='') as csvFile:
 
     # write heatmap data
     for i in range(len(intercepts)):
+        print(intercepts[i])
         dataRow = [str(int) for int in intercepts[i]] + [' '] + [str(err) for err in intercept_errs[i]]
+        #print(dataRow)
         writer.writerow(dataRow)
 
 
-fig.tight_layout()
-plt.show()
+#fig.tight_layout()
+#plt.show()
