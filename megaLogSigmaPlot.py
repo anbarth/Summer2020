@@ -2,7 +2,7 @@ import random
 import numpy as np
 import csv
 import math
-#import time
+import time
 from linReg import regress
 from myStats import mean, stdev
 
@@ -195,15 +195,17 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
 
     return (slope, slope_err, intercept, intercept_err)
 
+tic = time.time()
 random.seed()
 n1 = 1
-n2 = 2
-left = -10
-right = 10
-dx = 4
-Nlist = [10,100,250]
+n2 = 1
+left = -20
+right = 20
+dx = 0.05
+Nlist = [50,100,250,500,1000,2500]
 sampleSize = 25
 trials = 10
 
 findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials, showGraph=False)
-
+toc = time.time()
+print("runtime: "+str(toc-tic))
