@@ -201,10 +201,10 @@ n1 = 1
 n2 = 1
 left = -20
 right = 20
-dx = 0.05
+dx = 5
 Nlist = [50,100,250,500,1000,2500]
 sampleSize = 25
-trials = 10
+trials = 3
 
 findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials, showGraph=False)
 toc = time.time()
