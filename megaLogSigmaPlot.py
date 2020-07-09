@@ -13,7 +13,6 @@ from myStats import mean, stdev
     
 
 def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,showGraph=True):
-    print("waaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     ### STEP 1: SET UP
 #    tic = time.perf_counter()
 
