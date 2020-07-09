@@ -10,11 +10,9 @@ from myStats import mean, stdev
 #import statistics
 #import matplotlib.pyplot as plt
 
-#just testing that i can commit here    
 
 def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,showGraph=True):
     ### STEP 1: SET UP
-#    tic = time.perf_counter()
 
     # dimension of discretized position space
     D = int((right-left)/dx)
