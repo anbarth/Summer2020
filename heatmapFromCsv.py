@@ -6,12 +6,18 @@ fname = 'waluigi.csv'
 nMax = 5
 nLabel = ['1','','','','5']
 
+title = ""
 intercepts = []
 with open(fname) as csvFile:
     reader = csv.reader(csvFile, delimiter='\t')
+    line = 0
     for row in reader:
-        interceptsRow = [float(x) for x in row]
-        intercepts.append(interceptsRow)
+        if line == 0:
+            title = row[0]
+        else:
+            interceptsRow = [float(x) for x in row]
+            intercepts.append(interceptsRow)
+        line += 1
 
 
 fig, ax = plt.subplots()
@@ -29,4 +35,5 @@ for i in range(nMax):
         text = ax.text(j, i, intercepts[i][j], ha="center", va="center", color="w")
 
 fig.tight_layout()
+plt.figtext(0.4,0.025,title)
 plt.show()

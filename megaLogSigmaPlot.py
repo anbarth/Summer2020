@@ -205,5 +205,5 @@ Nlist = [10,100,250]
 sampleSize = 25
 trials = 10
 
-#findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials, showGraph=False)
+findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials, showGraph=False)
 
