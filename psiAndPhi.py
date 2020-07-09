@@ -3,15 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # choose two SHO energy levels
-n1 = 3
+n1 = 50
 n2 = 0
 
 # bounds of discretized position space
-left = -2
-right = 2
+left = -5
+right = 5
 
 # step size
-dx = 0.1
+dx = 0.025
 
 #########################################################
 

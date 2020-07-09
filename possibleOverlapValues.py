@@ -2,6 +2,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+from myStats import mean,stdev
 
 random.seed()
 
@@ -10,14 +11,14 @@ n1 = 0
 n2 = 0
 
 # bounds of discretized position space
-left = -1
-right = 1
+left = -30
+right = 30
 
 # step size
-dx = 0.025
+dx = 0.05
 
 # num values to put in histogram
-N = 10000
+N = 50000
 
 #########################################################
 
@@ -58,13 +59,6 @@ phiN = [x*(1/math.sqrt(norm2)) for x in phi]
 psi = psiN
 phi = phiN
 
-#### overwrite
-#D = 3
-#psi = [1]*D
-#phi = [1]*D
-
-####
-
 overlaps = []
 for i in range(N):
     zeta = [[random.choice([-1,1])] for i in range(D)]
@@ -73,6 +67,10 @@ for i in range(N):
     prod = phizeta * zetapsi
     overlaps.append(prod[0])
 
-plt.title('n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
+avg = int(1000*mean(overlaps))/1000
+sd = int(1000*stdev(overlaps))/1000
+
+plt.title('n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+'].\nN= '+str(N))
+plt.figtext(.5,0,'avg: '+str(avg)+'\nsd: '+str(sd))
 plt.hist(overlaps)
 plt.show()
