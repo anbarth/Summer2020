@@ -5,6 +5,7 @@ import math
 import time
 from linReg import regress
 from myStats import mean, stdev
+from sho import shoEigenbra,shoEigenket
 
 # imports that the UCSB computer doesnt support
 #import statistics
@@ -18,34 +19,8 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
     D = int((right-left)/dx)
 
     # construct the phi and psi matrices
-    psi = np.zeros((D,1))
-    phi = np.zeros((1,D))
-
-    # make hermite polynomial objects
-    n1_arr = [0]*(n1+1)
-    n1_arr[-1] = 1
-    n2_arr = [0]*(n2+1)
-    n2_arr[-1] = 1
-    herm1 = np.polynomial.hermite.Hermite(n1_arr,window=[left,right])
-    herm2 = np.polynomial.hermite.Hermite(n2_arr,window=[left,right])
-    herm1_arr = herm1.linspace(n=D)[1]
-    herm2_arr = herm2.linspace(n=D)[1]
-
-    # psi and phi's norm-squareds, so i can normalize later
-    norm1 = 0
-    norm2 = 0
-
-    x = left
-    for i in range(D):
-        psi[i][0] = math.exp(-1/2.0*x*x)*herm1_arr[i]
-        phi[0][i] = math.exp(-1/2.0*x*x)*herm2_arr[i]
-        norm1 += psi[i][0]*psi[i][0]
-        norm2 += phi[0][i]*phi[0][i]
-        x += dx
-    # normalize
-    psi = psi*(1/math.sqrt(norm1))
-    phi = phi*(1/math.sqrt(norm2))
-
+    psi = shoEigenket(n1,dx,left,right)
+    phi = shoEigenbra(n2,dx,left,right)
 
 
     ### STEP 2: RUN TRIALS
@@ -200,7 +175,7 @@ n2 = 1
 left = -20
 right = 20
 dx = 5
-Nlist = [50,100,250,500,1000,2500]
+Nlist = [50,100,250,500]
 sampleSize = 25
 trials = 3
 

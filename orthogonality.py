@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+from sho import shoEigenbra,shoEigenket
 
 def orthoCheck(nMax,dx,bound):
     overlaps = np.zeros((nMax,nMax))
@@ -11,53 +12,16 @@ def orthoCheck(nMax,dx,bound):
     D = int((right-left)/dx)
 
     for n1 in range(0,nMax):
-        #if n1 != 0:
-        #    continue
         # construct the psi vector...
-        psi = np.zeros((D,1))
-        # make hermite polynomial object
-        n1_arr = [0]*(n1+1)
-        n1_arr[-1] = 1
-        herm1 = np.polynomial.hermite.Hermite(n1_arr,window=[left,right])
-        herm1_arr = herm1.linspace(n=D)[1]
-        # psi's norm-squared
-        norm1 = 0
-        x = left
-        for i in range(D):
-            psi[i][0] = math.exp(-1/2.0*x*x)*herm1_arr[i]
-            norm1 += psi[i][0]*psi[i][0]
-            x += dx
-        # normalize
-        psi = psi*(1/math.sqrt(norm1))
+        psi = shoEigenket(n1,dx,left,right)
 
         for n2 in range(n1,nMax):
-            #if n2 != 3:
-            #    continue
-
             # construct the phi vector...
-            phi = np.zeros((1,D))
-            # make hermite polynomial object
-            n2_arr = [0]*(n2+1)
-            n2_arr[-1] = 1
-            herm2 = np.polynomial.hermite.Hermite(n2_arr,window=[left,right])
-            herm2_arr = herm2.linspace(n=D)[1]
-            # phi's norm-squared
-            norm2 = 0
-            x = left
-            for i in range(D):
-                phi[0][i] = math.exp(-1/2.0*x*x)*herm2_arr[i]
-                norm2 += phi[0][i]*phi[0][i]
-                x += dx
-            # normalize
-            phi = phi*(1/math.sqrt(norm2))
+            phi = shoEigenbra(n2,dx,left,right)
 
-            #print(np.matmul(phi,psi))
             overlap = np.matmul(phi,psi)
-            '''if overlap[0][0] <= -0.5:
-                print(str(n1)+" "+str(n2))'''
             overlaps[n1][n2] = overlap[0][0]
 
-    #return
     ### make heatmap
     fig, ax = plt.subplots()
     im = ax.imshow(overlaps)

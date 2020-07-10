@@ -1,10 +1,11 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+from sho import shoEigenket
 
 # choose two SHO energy levels
-n1 = 9
-n2 = 7
+n1 = 0
+n2 = 0
 
 # bounds of discretized position space
 left = -30
@@ -19,43 +20,9 @@ dx = 0.05
 D = int((right-left)/dx)
 
 # construct the phi and psi matrices
-psi = []
-phi = []
-truPsi = []
-truPhi = []
-domain = []
-
-# make hermite polynomial objects
-n1_arr = [0]*(n1+1)
-n1_arr[-1] = 1
-n2_arr = [0]*(n2+1)
-n2_arr[-1] = 1
-herm1 = np.polynomial.hermite.Hermite(n1_arr,window=[left,right])
-herm2 = np.polynomial.hermite.Hermite(n2_arr,window=[left,right])
-herm1_arr = herm1.linspace(n=D)[1]
-herm2_arr = herm2.linspace(n=D)[1]
-
-# psi and phi's norm-squareds, so i can normalize later
-norm1 = 0
-norm2 = 0
-truNorm1 = 0
-truNorm2 = 0
-
-x = left
-for i in range(D):
-    domain.append(x)
-    psi.append(math.exp(-1/2.0*x*x)*herm1_arr[i])
-    phi.append(math.exp(-1/2.0*x*x)*herm2_arr[i])
-    norm1 += psi[i]*psi[i]
-    norm2 += phi[i]*phi[i]
-
-    x += dx
-# normalize
-psiN = [x*(1/math.sqrt(norm1)) for x in psi]
-phiN = [x*(1/math.sqrt(norm2)) for x in phi]
-
-psi = psiN
-phi = phiN
+psi = shoEigenket(n1,dx,left,right)
+phi = shoEigenket(n2,dx,left,right)
+domain = np.linspace(left,right,D,endpoint=False)
 
 
 overlap = 0
