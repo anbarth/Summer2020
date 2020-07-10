@@ -9,7 +9,7 @@ from sho import shoEigenbra,shoEigenket
 
 # imports that the UCSB computer doesnt support
 #import statistics
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 
 def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,showGraph=True):
@@ -149,8 +149,8 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
 
     if showGraph:
         # titles and labels
-        plt.xlabel('ln(N)')
-        plt.ylabel('ln(sigma)')
+        #plt.xlabel('ln(N)')
+        #plt.ylabel('ln(sigma)')
         plt.title('n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
         slope_str = str( int(slope*10000)/10000 ) + ' +/- ' + str( int(slope_err*10000)/10000 )
         int_str = str( int(intercept*1000)/1000 ) + ' +/- ' + str( int(intercept_err*1000)/1000 )
@@ -179,6 +179,6 @@ Nlist = [50,100,250,500]
 sampleSize = 25
 trials = 3
 
-findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials, showGraph=False)
+findIntercept(n1, n2, left, right, dx, Nlist, sampleSize, trials, showGraph=True)
 toc = time.time()
 print("runtime: "+str(toc-tic))
