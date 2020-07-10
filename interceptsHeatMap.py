@@ -1,0 +1,102 @@
+import time
+import random
+import numpy as np
+from sho import shoEigenbra
+from myStats import mean,stdev
+from linReg import regress
+import matplotlib.pyplot as plt
+
+tic = time.time()
+random.seed()
+nMax = 1 # inclusive
+left = -10
+right = 10
+dx = 5
+Nlist = [50,100,250,500]
+sampleSize = 25
+trials = 3
+
+# dimension of discretized position space
+D = int((right-left)/dx)
+
+# get all eigenfunctions
+eigens = np.zeros((nMax+1,D))
+for n in range(nMax+1):
+    eigens[n] = shoEigenbra(n,dx,left,right)
+
+avgSig = np.zeros((len(Nlist),nMax+1,nMax+1))
+avgSig_err = np.zeros((len(Nlist),nMax+1,nMax+1))
+intercepts = np.zeros((nMax+1,nMax+1))
+intercept_errs = np.zeros((nMax+1,nMax+1))
+
+# get aaaaaaaaaall the dataaaaaaaaa
+for N_index in range(len(Nlist)):
+    N = Nlist[N_index]
+    sigmas = np.zeros((trials,nMax+1,nMax+1))
+
+    for i in range(trials):
+        # big ol' array for storing all them overlaps
+        # TODO the array doesnt technically need to be this big, i only need a triangle
+        overlaps = np.zeros((sampleSize,nMax+1,nMax+1))
+        for j in range(sampleSize):
+            # construct an SRI matrix
+            SRI = np.zeros((D,D))
+            for k in range(N):
+                zeta = [[random.choice([-1,1])] for x in range(D)]
+                zetazeta = np.matmul(zeta, np.transpose(zeta)) # |z><z|
+                SRI += zetazeta*(1.0/N) # SRI is the sum of |z><z|/N
+            # go over all n1, n2
+            for n1 in range(nMax+1):
+                psi = np.transpose(eigens[n1]) # transpose to get a ket
+                SRIpsi = np.matmul(SRI,psi)
+                for n2 in range(n1, nMax+1):
+                    phi = eigens[n2]
+                    overlap = np.matmul(phi,SRIpsi)
+                    overlaps[j][n1][n2] = overlap
+        # ok, overlaps array is filled in; now put data in sigmas
+        for n1 in range(nMax+1):
+            for n2 in range(n1,nMax+1):
+                theseOverlaps = [overlaps[x][n1][n2] for x in range(sampleSize)]
+                sigmas[i][n1][n2] = stdev(theseOverlaps)
+    
+    # ok, now i have all the sigmas. find avgs & std errs
+    for n1 in range(nMax+1):
+        for n2 in range(n1,nMax+1):
+            sigs = [sigmas[x][n1][n2] for x in range(trials)]
+            avgSig[N_index][n1][n2] = mean(sigs)
+            avgSig_err[N_index][n1][n2] = stdev(sigs)
+
+# ok, now i have all the data i need to make a plot for every (n1,n2)
+lnN = [np.log(N) for N in Nlist]
+for n1 in range(nMax+1):
+    for n2 in range(n1,nMax+1):
+        # here's the data i wanna work with
+        lnSigma = [np.log(avgSig[x][n1][n2]) for x in range(len(Nlist))]
+        lnSigma_err = [ avgSig_err[x][n1][n2] / avgSig[x][n1][n2] for x in range(len(Nlist))]
+
+        #plt.plot(lnN,lnSigma)
+        # regress!
+        (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma)
+        intercepts[n1][n2] = intercept
+        intercept_errs[n1][n2] = intercept_err
+
+# heatmap time :^)
+fig, ax = plt.subplots()
+im = ax.imshow(intercepts)
+
+nLabel = []
+for n in range(nMax):
+    if np.mod(n,1) == 0:
+        nLabel.append(str(n))
+    else:
+        nLabel.append('')
+
+ax.set_xticks(np.arange(len(nLabel)))
+ax.set_yticks(np.arange(len(nLabel)))
+ax.set_xticklabels(nLabel)
+ax.set_yticklabels(nLabel)
+
+plt.colorbar(im)
+#plt.setp(ax.get_xticklabels(),rotation=45,ha="right",rotation_mode="anchor")
+
+plt.show()
