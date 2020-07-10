@@ -37,8 +37,8 @@ def findIntercept(n1,n2,left,right,dx,Nlist,sampleSize,trials,writeToCsv=True,sh
 
     x = left
     for i in range(D):
-        psi[i][0] = math.exp(-1*x*x)*herm1_arr[i]
-        phi[0][i] = math.exp(-1*x*x)*herm2_arr[i]
+        psi[i][0] = math.exp(-1/2.0*x*x)*herm1_arr[i]
+        phi[0][i] = math.exp(-1/2.0*x*x)*herm2_arr[i]
         norm1 += psi[i][0]*psi[i][0]
         norm2 += phi[0][i]*phi[0][i]
         x += dx

@@ -3,15 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # choose two SHO energy levels
-n1 = 2
-n2 = 0
+n1 = 9
+n2 = 7
 
 # bounds of discretized position space
-left = -50
-right = 50
+left = -30
+right = 30
 
 # step size
-dx = 0.005
+dx = 0.05
 
 #########################################################
 
@@ -21,6 +21,8 @@ D = int((right-left)/dx)
 # construct the phi and psi matrices
 psi = []
 phi = []
+truPsi = []
+truPhi = []
 domain = []
 
 # make hermite polynomial objects
@@ -36,14 +38,17 @@ herm2_arr = herm2.linspace(n=D)[1]
 # psi and phi's norm-squareds, so i can normalize later
 norm1 = 0
 norm2 = 0
+truNorm1 = 0
+truNorm2 = 0
 
 x = left
 for i in range(D):
     domain.append(x)
-    psi.append(math.exp(-1*x*x)*herm1_arr[i])
-    phi.append(math.exp(-1*x*x)*herm2_arr[i])
+    psi.append(math.exp(-1/2.0*x*x)*herm1_arr[i])
+    phi.append(math.exp(-1/2.0*x*x)*herm2_arr[i])
     norm1 += psi[i]*psi[i]
     norm2 += phi[i]*phi[i]
+
     x += dx
 # normalize
 psiN = [x*(1/math.sqrt(norm1)) for x in psi]
@@ -51,6 +56,7 @@ phiN = [x*(1/math.sqrt(norm2)) for x in phi]
 
 psi = psiN
 phi = phiN
+
 
 overlap = 0
 for i in range(D):

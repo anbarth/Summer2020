@@ -47,8 +47,8 @@ norm2 = 0
 x = left
 for i in range(D):
     domain.append(x)
-    psi.append(math.exp(-1*x*x)*herm1_arr[i])
-    phi.append(math.exp(-1*x*x)*herm2_arr[i])
+    psi.append(math.exp(-1/2.0*x*x)*herm1_arr[i])
+    phi.append(math.exp(-1/2.0*x*x)*herm2_arr[i])
     norm1 += psi[i]*psi[i]
     norm2 += phi[i]*phi[i]
     x += dx

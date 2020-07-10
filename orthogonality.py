@@ -2,7 +2,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
-def orthogonalityCheck(nMax,dx,bound):
+def orthoCheck(nMax,dx,bound):
     overlaps = np.zeros((nMax,nMax))
 
     # dimension of discretized position space
@@ -24,7 +24,7 @@ def orthogonalityCheck(nMax,dx,bound):
         norm1 = 0
         x = left
         for i in range(D):
-            psi[i][0] = math.exp(-1*x*x)*herm1_arr[i]
+            psi[i][0] = math.exp(-1/2.0*x*x)*herm1_arr[i]
             norm1 += psi[i][0]*psi[i][0]
             x += dx
         # normalize
@@ -45,7 +45,7 @@ def orthogonalityCheck(nMax,dx,bound):
             norm2 = 0
             x = left
             for i in range(D):
-                phi[0][i] = math.exp(-1*x*x)*herm2_arr[i]
+                phi[0][i] = math.exp(-1/2.0*x*x)*herm2_arr[i]
                 norm2 += phi[0][i]*phi[0][i]
                 x += dx
             # normalize
@@ -53,8 +53,8 @@ def orthogonalityCheck(nMax,dx,bound):
 
             #print(np.matmul(phi,psi))
             overlap = np.matmul(phi,psi)
-            if overlap[0][0] <= -0.5:
-                print(str(n1)+" "+str(n2))
+            '''if overlap[0][0] <= -0.5:
+                print(str(n1)+" "+str(n2))'''
             overlaps[n1][n2] = overlap[0][0]
 
     #return
@@ -77,7 +77,10 @@ def orthogonalityCheck(nMax,dx,bound):
     ax.set_yticklabels(nLabel)
 
     #plt.setp(ax.get_xticklabels(),rotation=45,ha="right",rotation_mode="anchor")
+    #plt.figtext(0.4,0.025,'dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
+    plt.title('dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
 
     fig.tight_layout()
     plt.show() 
 
+orthoCheck(51,0.025,20)
