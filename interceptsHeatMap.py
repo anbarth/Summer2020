@@ -5,16 +5,17 @@ from sho import shoEigenbra
 from myStats import mean,stdev
 from linReg import regress
 import matplotlib.pyplot as plt
+import csv
 
 tic = time.time()
 random.seed()
-nMax = 1 # inclusive
+nMax = 5 # inclusive
 left = -10
 right = 10
-dx = 5
-Nlist = [50,100,250,500]
+dx = 2
+Nlist = [50,150,500]
 sampleSize = 25
-trials = 3
+trials = 10
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -80,23 +81,25 @@ for n1 in range(nMax+1):
         intercepts[n1][n2] = intercept
         intercept_errs[n1][n2] = intercept_err
 
-# heatmap time :^)
-fig, ax = plt.subplots()
-im = ax.imshow(intercepts)
+# write everything to a csv
+#with open('heatmap.csv','w') as csvFile:
+with open('heatmap.csv','w',newline='') as csvFile:
+    writer = csv.writer(csvFile, delimiter=',')
 
-nLabel = []
-for n in range(nMax):
-    if np.mod(n,1) == 0:
-        nLabel.append(str(n))
-    else:
-        nLabel.append('')
+    # write specs abt this run
+    writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
+    writer.writerow(['sample size: '+str(sampleSize)+', '+str(trials)+' trials'])
 
-ax.set_xticks(np.arange(len(nLabel)))
-ax.set_yticks(np.arange(len(nLabel)))
-ax.set_xticklabels(nLabel)
-ax.set_yticklabels(nLabel)
+    # write intercepts
+    writer.writerow(['intercepts'])
+    for i in range(len(intercepts)):
+        writer.writerow(intercepts[i])
 
-plt.colorbar(im)
-#plt.setp(ax.get_xticklabels(),rotation=45,ha="right",rotation_mode="anchor")
+    # write intercept errors
+    writer.writerow(['intercept errors'])
+    for i in range(len(intercept_errs)):
+        writer.writerow(intercept_errs[i])
 
-plt.show()
+toc = time.time()
+print("runtime (s): "+str(toc-tic))
+

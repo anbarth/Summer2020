@@ -2,38 +2,43 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 
-fname = 'waluigi.csv'
+fname = 'heatmap.csv'
 nMax = 5
-nLabel = ['1','','','','5']
 
 title = ""
 intercepts = []
 with open(fname) as csvFile:
-    reader = csv.reader(csvFile, delimiter='\t')
+    reader = csv.reader(csvFile, delimiter=',')
     line = 0
     for row in reader:
-        if line == 0:
-            title = row[0]
-        else:
+        if line > 2 and line <= 3+nMax:
             interceptsRow = [float(x) for x in row]
             intercepts.append(interceptsRow)
+        elif line == 0:
+            title = row[0]
+        elif line == 1:
+            title += '\n'+row[0]
+        # do nothing with line 2  
         line += 1
 
 
 fig, ax = plt.subplots()
 im = ax.imshow(intercepts)
 
+nLabel = []
+for n in range(nMax):
+    if np.mod(n,5) == 0:
+        nLabel.append(str(n))
+    else:
+        nLabel.append('')
+
 ax.set_xticks(np.arange(len(nLabel)))
 ax.set_yticks(np.arange(len(nLabel)))
 ax.set_xticklabels(nLabel)
 ax.set_yticklabels(nLabel)
 
-#plt.setp(ax.get_xticklabels(),rotation=45,ha="right",rotation_mode="anchor")
-
-for i in range(nMax):
-    for j in range(nMax):
-        text = ax.text(j, i, intercepts[i][j], ha="center", va="center", color="w")
+plt.title(title)
+plt.colorbar(im)
 
 fig.tight_layout()
-plt.figtext(0.4,0.025,title)
 plt.show()
