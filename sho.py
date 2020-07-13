@@ -10,13 +10,13 @@ def shoEigenket(n,dx,left,right):
     # make hermite polynomial object
     n_arr = [0]*(n+1)
     n_arr[-1] = 1
-    herm = np.polynomial.hermite.Hermite(n_arr,window=[left,right])
+    herm = np.polynomial.hermite.Hermite(n_arr,window=[left,right-dx])
     herm_arr = herm.linspace(n=D)[1]
 
     # norm-squared, so i can normalize later
     norm2 = 0
 
-    x = left
+    x=left
     for i in range(D):
         psi[i][0] = math.exp(-1/2.0*x*x)*herm_arr[i]
         norm2 += psi[i][0]*psi[i][0]
@@ -35,7 +35,7 @@ def shoEigenbra(n,dx,left,right):
     # make hermite polynomial object
     n_arr = [0]*(n+1)
     n_arr[-1] = 1
-    herm = np.polynomial.hermite.Hermite(n_arr,window=[left,right])
+    herm = np.polynomial.hermite.Hermite(n_arr,window=[left,right-dx])
     herm_arr = herm.linspace(n=D)[1]
 
     # norm-squared, so i can normalize later
