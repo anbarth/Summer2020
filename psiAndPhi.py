@@ -1,18 +1,19 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-from sho import shoEigenket
+import sho
+
 
 # choose two SHO energy levels
-n1 = 0
+n1 = 50
 n2 = 0
 
 # bounds of discretized position space
-left = -30
-right = 30
+left = -10
+right = 10
 
 # step size
-dx = 0.05
+dx = 0.025
 
 #########################################################
 
@@ -20,8 +21,8 @@ dx = 0.05
 D = int((right-left)/dx)
 
 # construct the phi and psi matrices
-psi = shoEigenket(n1,dx,left,right)
-phi = shoEigenket(n2,dx,left,right)
+psi = sho.shoEigenket(n1,dx,left,right)
+phi = sho.shoEigenket(n2,dx,left,right)
 domain = np.linspace(left,right,D,endpoint=False)
 
 
@@ -32,6 +33,6 @@ print(overlap)
 
 plt.title('n1='+str(n1)+', n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']')
 plt.plot(domain,psi)
-plt.plot(domain,phi)
+#plt.plot(domain,phi)
 #plt.hist(domain,bins=len(domain),weights=psi)
 plt.show()
