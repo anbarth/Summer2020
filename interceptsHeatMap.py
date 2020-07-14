@@ -6,16 +6,18 @@ from myStats import mean,stdev
 from linReg import regress
 import matplotlib.pyplot as plt
 import csv
+import multiprocessing as mp
+
 
 tic = time.time()
 random.seed()
-nMax = 5 # inclusive
+nMax = 3 # inclusive
 left = -10
 right = 10
 dx = 2
 Nlist = [50,150,500]
 sampleSize = 25
-trials = 10
+trials = 3
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -50,10 +52,15 @@ for N_index in range(len(Nlist)):
             for n1 in range(nMax+1):
                 psi = np.transpose(eigens[n1]) # transpose to get a ket
                 SRIpsi = np.matmul(SRI,psi)
-                for n2 in range(n1, nMax+1):
-                    phi = eigens[n2]
-                    overlap = np.matmul(phi,SRIpsi)
-                    overlaps[j][n1][n2] = overlap
+                #for n2 in range(n1, nMax+1):
+                #    phi = eigens[n2]
+                #    overlap = np.matmul(phi,SRIpsi)
+                #    overlaps[j][n1][n2] = overlap
+                phis = eigens[n1:]
+                __spec__ = "ModuleSpec(name='builtins', loader=<class '_frozen_importlib.BuiltinImporter'>)"
+                pool = mp.Pool(mp.cpu_count())
+                overlaps[j][n1] = [pool.apply(np.matmul,args=(phi,SRIpsi)) for phi in phis]
+                pool.close()
         # ok, overlaps array is filled in; now put data in sigmas
         for n1 in range(nMax+1):
             for n2 in range(n1,nMax+1):
