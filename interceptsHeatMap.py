@@ -11,10 +11,10 @@ import multiprocessing as mp
 
 tic = time.time()
 random.seed()
-nMax = 5 # inclusive
-left = -10
-right = 10
-dx = 2
+nMax = 11 # inclusive
+left = -20
+right = 20
+dx = 0.05
 Nlist = [50,150,500]
 sampleSize = 25
 trials = 10
@@ -40,9 +40,9 @@ for N_index in range(len(Nlist)):
     for i in range(trials):
         # big ol' array for storing all them overlaps
         # TODO the array doesnt technically need to be this big, i only need a triangle
-        #overlaps = np.zeros((sampleSize,nMax+1,nMax+1))
+        overlaps = np.zeros((sampleSize,nMax+1,nMax+1))
         for j in range(sampleSize):
-            overlaps = np.zeros((nMax+1,nMax+1))
+            #overlaps = np.zeros((nMax+1,nMax+1))
             psizeta = np.zeros((nMax+1,N))
             # pick N random vectors
             for k in range(N):
@@ -85,8 +85,8 @@ for n1 in range(nMax+1):
         intercept_errs[n1][n2] = intercept_err
 
 # write everything to a csv
-#with open('heatmap.csv','w') as csvFile:
-with open('heatmap.csv','w',newline='') as csvFile:
+with open('heatmap.csv','w') as csvFile:
+#with open('heatmap.csv','w',newline='') as csvFile:
     writer = csv.writer(csvFile, delimiter=',')
 
     # write specs abt this run
