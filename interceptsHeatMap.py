@@ -40,8 +40,9 @@ for N_index in range(len(Nlist)):
     for i in range(trials):
         # big ol' array for storing all them overlaps
         # TODO the array doesnt technically need to be this big, i only need a triangle
-        overlaps = np.zeros((sampleSize,nMax+1,nMax+1))
+        #overlaps = np.zeros((sampleSize,nMax+1,nMax+1))
         for j in range(sampleSize):
+            overlaps = np.zeros((nMax+1,nMax+1))
             psizeta = np.zeros((nMax+1,N))
             # pick N random vectors
             for k in range(N):
