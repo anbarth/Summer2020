@@ -11,13 +11,13 @@ import multiprocessing as mp
 
 tic = time.time()
 random.seed()
-nMax = 3 # inclusive
+nMax = 5 # inclusive
 left = -10
 right = 10
 dx = 2
 Nlist = [50,150,500]
 sampleSize = 25
-trials = 3
+trials = 10
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -42,25 +42,20 @@ for N_index in range(len(Nlist)):
         # TODO the array doesnt technically need to be this big, i only need a triangle
         overlaps = np.zeros((sampleSize,nMax+1,nMax+1))
         for j in range(sampleSize):
-            # construct an SRI matrix
-            SRI = np.zeros((D,D))
+            psizeta = np.zeros((nMax+1,N))
+            # pick N random vectors
             for k in range(N):
-                zeta = [[random.choice([-1,1])] for x in range(D)]
-                zetazeta = np.matmul(zeta, np.transpose(zeta)) # |z><z|
-                SRI += zetazeta*(1.0/N) # SRI is the sum of |z><z|/N
+                zeta = [[random.choice([-1,1])] for x in range(D)] # |z>
+                for n in range(nMax+1):
+                    psizeta[n][k] = np.matmul(eigens[n], zeta) # <psi_n|z>
+                
             # go over all n1, n2
             for n1 in range(nMax+1):
-                psi = np.transpose(eigens[n1]) # transpose to get a ket
-                SRIpsi = np.matmul(SRI,psi)
-                #for n2 in range(n1, nMax+1):
-                #    phi = eigens[n2]
-                #    overlap = np.matmul(phi,SRIpsi)
-                #    overlaps[j][n1][n2] = overlap
-                phis = eigens[n1:]
-                __spec__ = "ModuleSpec(name='builtins', loader=<class '_frozen_importlib.BuiltinImporter'>)"
-                pool = mp.Pool(mp.cpu_count())
-                overlaps[j][n1] = [pool.apply(np.matmul,args=(phi,SRIpsi)) for phi in phis]
-                pool.close()
+                for n2 in range(n1, nMax+1):
+                    sum = np.vdot(psizeta[n1], psizeta[n2])
+                    overlap = sum*(1.0/N)
+                    overlaps[i][n1][n2] = overlap
+
         # ok, overlaps array is filled in; now put data in sigmas
         for n1 in range(nMax+1):
             for n2 in range(n1,nMax+1):
