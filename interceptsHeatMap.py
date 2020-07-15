@@ -4,17 +4,17 @@ import numpy as np
 from sho import shoEigenbra
 from myStats import mean,stdev
 from linReg import regress
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import csv
 #import multiprocessing as mp
 
 
 tic = time.time()
 random.seed()
-nMax = 5 # inclusive
+nMax = 0 # inclusive
 left = -10
 right = 10
-dx = 2
+dx = 0.05
 Nlist = [50,150,500]
 sampleSize = 25
 trials = 10
@@ -35,7 +35,7 @@ intercept_errs = np.zeros((nMax+1,nMax+1))
 # get aaaaaaaaaall the dataaaaaaaaa
 for N_index in range(len(Nlist)):
     N = Nlist[N_index]
-    sigmas = np.zeros((trials,nMax+1,nMax+1))
+    sigmas = np.zeros((nMax+1,nMax+1,trials))
 
     for i in range(trials):
         # big ol' array for storing all them overlaps
@@ -55,21 +55,19 @@ for N_index in range(len(Nlist)):
             # go over all n1, n2
             for n1 in range(nMax+1):
                 for n2 in range(n1, nMax+1):
-                    sum = np.vdot(psizeta[n1], psizeta[n2])
-                    #sum = random.choice([-1,1,0,5,6])
-                    overlaps[n1][n2][i] = sum*(1.0/N)
+                    # store <phi|psi> = sum <phi|z><z|psi> / N
+                    overlaps[n1][n2][i] = np.vdot(psizeta[n1], psizeta[n2])*(1.0/N) 
 
         # ok, overlaps array is filled in; now put data in sigmas
         for n1 in range(nMax+1):
             for n2 in range(n1,nMax+1):
-                sigmas[i][n1][n2] = stdev(overlaps[n1][n2])
+                sigmas[n1][n2][i] = stdev(overlaps[n1][n2])
     
     # ok, now i have all the sigmas. find avgs & std errs
     for n1 in range(nMax+1):
         for n2 in range(n1,nMax+1):
-            sigs = [sigmas[x][n1][n2] for x in range(trials)]
-            avgSig[N_index][n1][n2] = mean(sigs)
-            avgSig_err[N_index][n1][n2] = stdev(sigs)
+            avgSig[N_index][n1][n2] = mean(sigmas[n1][n2])
+            avgSig_err[N_index][n1][n2] = stdev(sigmas[n1][n2])
 
 # ok, now i have all the data i need to make a plot for every (n1,n2)
 lnN = [np.log(N) for N in Nlist]
@@ -79,7 +77,8 @@ for n1 in range(nMax+1):
         lnSigma = [np.log(avgSig[x][n1][n2]) for x in range(len(Nlist))]
         lnSigma_err = [ avgSig_err[x][n1][n2] / avgSig[x][n1][n2] for x in range(len(Nlist))]
 
-        #plt.plot(lnN,lnSigma)
+        plt.plot(lnN,lnSigma)
+        plt.show()
         # regress!
         (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma)
         intercepts[n1][n2] = intercept
