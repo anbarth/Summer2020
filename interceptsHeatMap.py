@@ -4,17 +4,17 @@ import numpy as np
 from sho import shoEigenbra
 from myStats import mean,stdev
 from linReg import regress
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import csv
-import multiprocessing as mp
+#import multiprocessing as mp
 
 
 tic = time.time()
 random.seed()
-nMax = 11 # inclusive
-left = -20
-right = 20
-dx = 0.05
+nMax = 5 # inclusive
+left = -10
+right = 10
+dx = 2
 Nlist = [50,150,500]
 sampleSize = 25
 trials = 10
@@ -40,28 +40,29 @@ for N_index in range(len(Nlist)):
     for i in range(trials):
         # big ol' array for storing all them overlaps
         # TODO the array doesnt technically need to be this big, i only need a triangle
-        overlaps = np.zeros((sampleSize,nMax+1,nMax+1))
+        overlaps = np.zeros((nMax+1,nMax+1,sampleSize))
         for j in range(sampleSize):
-            #overlaps = np.zeros((nMax+1,nMax+1))
             psizeta = np.zeros((nMax+1,N))
             # pick N random vectors
             for k in range(N):
-                zeta = [[random.choice([-1,1])] for x in range(D)] # |z>
+                #zeta = [[random.choice([-1,1])] for x in range(D)] # |z>
+                zeta = [random.choice([-1,1]) for x in range(D)] # <z|
                 for n in range(nMax+1):
-                    psizeta[n][k] = np.matmul(eigens[n], zeta) # <psi_n|z>
+                    #psizeta[n][k] = random.choice([-1,1,0,5,6])
+                    #psizeta[n][k] = np.matmul(eigens[n], zeta) # <psi_n|z>
+                    psizeta[n][k] = np.dot(eigens[n], zeta)
                 
             # go over all n1, n2
             for n1 in range(nMax+1):
                 for n2 in range(n1, nMax+1):
                     sum = np.vdot(psizeta[n1], psizeta[n2])
-                    overlap = sum*(1.0/N)
-                    overlaps[i][n1][n2] = overlap
+                    #sum = random.choice([-1,1,0,5,6])
+                    overlaps[n1][n2][i] = sum*(1.0/N)
 
         # ok, overlaps array is filled in; now put data in sigmas
         for n1 in range(nMax+1):
             for n2 in range(n1,nMax+1):
-                theseOverlaps = [overlaps[x][n1][n2] for x in range(sampleSize)]
-                sigmas[i][n1][n2] = stdev(theseOverlaps)
+                sigmas[i][n1][n2] = stdev(overlaps[n1][n2])
     
     # ok, now i have all the sigmas. find avgs & std errs
     for n1 in range(nMax+1):
