@@ -17,12 +17,12 @@ tic = time.time()
 random.seed()
 n1 = 2
 n2 = 5
-left = -10
-right = 10
-dx = 2
-Nlist = [50,150,500]
-sampleSize = 10
-trials = 3
+left = -15
+right = 15
+dx = 0.05
+Nlist = [50,100,250,500,1000,2500]
+sampleSize = 50
+trials = 10
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -61,7 +61,7 @@ avgSig_err = np.zeros((len(Nlist),1))
 for N_index in range(len(Nlist)):
     N = Nlist[N_index]
     sigmas = np.zeros((1,trials))
-
+    avgOverlaps = []
     for i in range(trials):
         # big ol' array for storing all them overlaps
         
@@ -71,13 +71,13 @@ for N_index in range(len(Nlist)):
         pool.close()
 
         # ok, overlaps array is filled in; now put data in sigmas
-
+        avgOverlaps.append(mean(overlaps))
         sigmas[0][i] = stdev(overlaps)
     
     # ok, now i have all the sigmas. find avgs & std errs
     avgSig[N_index] = mean(sigmas[0])
     avgSig_err[N_index] = stdev(sigmas[0]) / np.sqrt(trials)
-
+    print(mean(avgOverlaps))
 # ok, now i have all the data i need to make a plot for every (n1,n2)
 lnN = [np.log(N) for N in Nlist]
 
