@@ -85,9 +85,9 @@ for N_index in range(len(Nlist)):
                     # store <phi|psi> = sum <phi|z><z|psi> / N
                     # TODO that j was an i earlier.... p sure that was wrong.....
                     overlaps[n1][n2][j] = np.vdot(psizeta[n1], psizeta[n2])*(1.0/N) '''
-        __spec__ = "ModuleSpec(name='builtins', loader=<class '_frozen_importlib.BuiltinImporter'>)"
+        #__spec__ = "ModuleSpec(name='builtins', loader=<class '_frozen_importlib.BuiltinImporter'>)"
         pool = mp.Pool(mp.cpu_count())
-        overlaps = [pool.apply_async(calcOverlaps,args=(N)) for j in range(sampleSize)]
+        overlaps = [pool.apply(calcOverlaps,args=[N]) for j in range(sampleSize)]
         pool.close()
 
         # ok, overlaps array is filled in; now put data in sigmas
@@ -109,8 +109,8 @@ for n1 in range(nMax+1):
         lnSigma = [np.log(avgSig[x][n1][n2]) for x in range(len(Nlist))]
         lnSigma_err = [ avgSig_err[x][n1][n2] / avgSig[x][n1][n2] for x in range(len(Nlist))]
 
-        plt.plot(lnN,lnSigma)
-        plt.show()
+        #plt.plot(lnN,lnSigma)
+        #plt.show()
         # regress!
         (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma)
         intercepts[n1][n2] = intercept
