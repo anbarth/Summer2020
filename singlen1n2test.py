@@ -17,11 +17,11 @@ tic = time.time()
 random.seed()
 n1 = 2
 n2 = 5
-left = -15
-right = 15
-dx = 0.05
-Nlist = [50,100,250,500,1000,2500]
-sampleSize = 50
+left = -10
+right = 10
+dx = 2
+Nlist = [50,150,500]
+sampleSize = 100
 trials = 10
 
 # dimension of discretized position space
@@ -44,10 +44,7 @@ def calcOverlap(N):
         psizeta[0][k] = np.dot(eigens[0], zeta) # <psi_n|z>
         psizeta[1][k] = np.dot(eigens[1], zeta) # <psi_n|z>
         
-
-    overlap = np.vdot(psizeta[0], psizeta[1])*(1.0/N) 
-    
-    return overlap
+    return np.vdot(psizeta[0], psizeta[1])*(1.0/N) 
 
 
 ### THE MEAT
