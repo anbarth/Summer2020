@@ -101,13 +101,13 @@ with open('n1n2.csv','w') as csvFile:
     writer.writerow(['sample size: '+str(sampleSize)+', '+str(trials)+' trials'])
 
     # write slope and intercept
-    writer.writerow(['slope',slope,'slope err',slope_err])
-    writer.writerow(['incpt',intercept,'incpt err',intercept_err])
+    writer.writerow(['slope',slope[0],'slope err',slope_err])
+    writer.writerow(['incpt',intercept[0],'incpt err',intercept_err])
 
     # write ln sigma vs ln N
     writer.writerow(['ln N','ln sigma','ln sigma err'])
     for i in range(len(Nlist)):
-        writer.writerow([lnN[i],lnSigma[i],lnSigma_err[i]])
+        writer.writerow([lnN[i],lnSigma[i][0],lnSigma_err[i][0]])
 
 
 
