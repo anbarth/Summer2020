@@ -6,18 +6,22 @@ from myStats import mean,stdev
 from linReg import regress
 import matplotlib.pyplot as plt
 import csv
-#import multiprocessing as mp
+import multiprocessing as mp
+
 
 
 tic = time.time()
+
+### SET UP
+
 random.seed()
-nMax = 0 # inclusive
+nMax = 3 # inclusive
 left = -10
 right = 10
-dx = 0.05
+dx = 2
 Nlist = [50,150,500]
-sampleSize = 25
-trials = 10
+sampleSize = 10
+trials = 3
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -26,6 +30,29 @@ D = int((right-left)/dx)
 eigens = np.zeros((nMax+1,D))
 for n in range(nMax+1):
     eigens[n] = shoEigenbra(n,dx,left,right)
+
+### PARALLEL SHIT??
+
+def calcOverlaps(N):
+    overlaps = np.zeros((nMax+1,nMax+1))
+    psizeta = np.zeros((nMax+1,N))
+    # pick N random vectors
+    for k in range(N):
+        zeta = [random.choice([-1,1]) for x in range(D)] # <z|
+        for n in range(nMax+1):
+            # TODO some complex conjugate nonesense might be needed here
+            psizeta[n][k] = np.dot(eigens[n], zeta) # <psi_n|z>
+        
+    # go over all n1, n2
+    for n1 in range(nMax+1):
+        for n2 in range(n1, nMax+1):
+            # store <phi|psi> = sum <phi|z><z|psi> / N
+            overlaps[n1][n2] = np.vdot(psizeta[n1], psizeta[n2])*(1.0/N) 
+    
+    return overlaps
+
+
+### THE MEAT
 
 avgSig = np.zeros((len(Nlist),nMax+1,nMax+1))
 avgSig_err = np.zeros((len(Nlist),nMax+1,nMax+1))
@@ -41,7 +68,7 @@ for N_index in range(len(Nlist)):
         # big ol' array for storing all them overlaps
         # TODO the array doesnt technically need to be this big, i only need a triangle
         overlaps = np.zeros((nMax+1,nMax+1,sampleSize))
-        for j in range(sampleSize):
+        '''for j in range(sampleSize):
             psizeta = np.zeros((nMax+1,N))
             # pick N random vectors
             for k in range(N):
@@ -56,7 +83,12 @@ for N_index in range(len(Nlist)):
             for n1 in range(nMax+1):
                 for n2 in range(n1, nMax+1):
                     # store <phi|psi> = sum <phi|z><z|psi> / N
-                    overlaps[n1][n2][i] = np.vdot(psizeta[n1], psizeta[n2])*(1.0/N) 
+                    # TODO that j was an i earlier.... p sure that was wrong.....
+                    overlaps[n1][n2][j] = np.vdot(psizeta[n1], psizeta[n2])*(1.0/N) '''
+        __spec__ = "ModuleSpec(name='builtins', loader=<class '_frozen_importlib.BuiltinImporter'>)"
+        pool = mp.Pool(mp.cpu_count())
+        overlaps = [pool.apply_async(calcOverlaps,args=(N)) for j in range(sampleSize)]
+        pool.close()
 
         # ok, overlaps array is filled in; now put data in sigmas
         for n1 in range(nMax+1):
