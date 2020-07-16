@@ -17,11 +17,11 @@ tic = time.time()
 random.seed()
 n1 = 2
 n2 = 5
-left = -10
-right = 10
-dx = 2
-Nlist = [50,150,500]
-sampleSize = 100
+left = -20
+right = 20
+dx = 0.05
+Nlist = [50,150,500,1000,2500]
+sampleSize = 500
 trials = 10
 
 # dimension of discretized position space
@@ -63,9 +63,9 @@ for N_index in range(len(Nlist)):
         
         pool = mp.Pool(mp.cpu_count())
         overlaps_results = [pool.apply_async(calcOverlap,args=[N]) for j in range(sampleSize)]
-        overlaps = [r.get()[1] for r in overlaps_results]
+        overlaps = [r.get() for r in overlaps_results]
         pool.close()
-
+        pool.join()
         # ok, overlaps array is filled in; now put data in sigmas
         avgOverlaps.append(mean(overlaps))
         sigmas[0][i] = stdev(overlaps)
