@@ -11,10 +11,9 @@ import multiprocessing as mp
 
 
 tic = time.time()
+random.seed()
 
 ### SET UP
-
-random.seed()
 nMax = 2 # inclusive
 left = -10
 right = 10
@@ -67,13 +66,12 @@ for N_index in range(len(Nlist)):
     for i in range(trials):
         # big ol' array for storing all them overlaps
         # TODO the array doesnt technically need to be this big, i only need a triangle
-        #overlaps = np.zeros((nMax+1,nMax+1,sampleSize))
-        
-        #__spec__ = "ModuleSpec(name='builtins', loader=<class '_frozen_importlib.BuiltinImporter'>)"
         pool = mp.Pool(mp.cpu_count())
-        overlaps = [pool.apply(calcOverlaps,args=[N]) for j in range(sampleSize)]
+        #overlaps = [pool.apply(calcOverlaps,args=[N]) for j in range(sampleSize)]
+        overlaps_results = [pool.apply_async(calcOverlaps,args=[N]) for j in range(sampleSize)]
         pool.close()
-
+        pool.join()
+        overlaps = [r.get() for r in overlaps_results]
         # ok, overlaps array is filled in; now put data in sigmas
         for n1 in range(nMax+1):
             for n2 in range(n1,nMax+1):

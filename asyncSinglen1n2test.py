@@ -63,9 +63,9 @@ for N_index in range(len(Nlist)):
         
         pool = mp.Pool(mp.cpu_count())
         overlaps_results = [pool.apply_async(calcOverlap,args=[N]) for j in range(sampleSize)]
-        overlaps = [r.get() for r in overlaps_results]
         pool.close()
         pool.join()
+        overlaps = [r.get() for r in overlaps_results]
         # ok, overlaps array is filled in; now put data in sigmas
         avgOverlaps.append(mean(overlaps))
         sigmas[0][i] = stdev(overlaps)
