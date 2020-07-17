@@ -17,10 +17,10 @@ tic = time.time()
 random.seed()
 n1 = 2
 n2 = 5
-left = -20
-right = 20
-dx = 0.05
-Nlist = [10,25,50,150,500,1000,2500]
+left = -10
+right = 10
+dx = 2
+Nlist = [50,150,500]
 sampleSize = 5000
 trials = 10
 

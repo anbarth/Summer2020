@@ -14,13 +14,13 @@ tic = time.time()
 random.seed()
 
 ### SET UP
-nMax = 2 # inclusive
-left = -10
-right = 10
-dx = 2
-Nlist = [50,150,500]
-sampleSize = 10
-trials = 3
+nMax = 5 # inclusive
+left = -20
+right = 20
+dx = 0.05
+Nlist = [10,25,50,150,500,1000]
+sampleSize = 1000
+trials = 50
 
 # dimension of discretized position space
 D = int((right-left)/dx)
