@@ -19,8 +19,8 @@ left = -20
 right = 20
 dx = 0.05
 Nlist = [10,25,50,150,500,1000]
-sampleSize = 1000
-trials = 50
+sampleSize = 50
+trials = 10
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -61,6 +61,7 @@ intercept_errs = np.zeros((nMax+1,nMax+1))
 # get aaaaaaaaaall the dataaaaaaaaa
 for N_index in range(len(Nlist)):
     N = Nlist[N_index]
+    print(N)
     sigmas = np.zeros((nMax+1,nMax+1,trials))
 
     for i in range(trials):
@@ -75,7 +76,8 @@ for N_index in range(len(Nlist)):
         # ok, overlaps array is filled in; now put data in sigmas
         for n1 in range(nMax+1):
             for n2 in range(n1,nMax+1):
-                sigmas[n1][n2][i] = stdev(overlaps[n1][n2])
+                theseOverlaps = [overlaps[x][n1][n2] for x in range(sampleSize)]
+                sigmas[n1][n2][i] = stdev(theseOverlaps)
     
     # ok, now i have all the sigmas. find avgs & std errs
     for n1 in range(nMax+1):
@@ -88,6 +90,7 @@ lnN = [np.log(N) for N in Nlist]
 for n1 in range(nMax+1):
     for n2 in range(n1,nMax+1):
         # here's the data i wanna work with
+        #print(avgSig)
         lnSigma = [np.log(avgSig[x][n1][n2]) for x in range(len(Nlist))]
         lnSigma_err = [ avgSig_err[x][n1][n2] / avgSig[x][n1][n2] for x in range(len(Nlist))]
 
@@ -97,6 +100,12 @@ for n1 in range(nMax+1):
         (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma)
         intercepts[n1][n2] = intercept
         intercept_errs[n1][n2] = intercept_err
+
+    with open('interceptTest.csv','w') as csvFile:
+        writer = csv.writer(csvFile, delimiter = ',')
+        writer.writerow(['ln N','ln sig','err'])
+        for i in range(len(Nlist)):
+            writer.writerow([lnN[i],lnSigma[i],lnSigma_err[i]])
 
 # write everything to a csv
 with open('heatmap.csv','w') as csvFile:

@@ -17,11 +17,11 @@ tic = time.time()
 random.seed()
 n1 = 2
 n2 = 5
-left = -10
-right = 10
-dx = 2
-Nlist = [50,150,500]
-sampleSize = 5000
+left = -20
+right = 20
+dx = 0.05
+Nlist = [10,25,50,150,500,1000]
+sampleSize = 50
 trials = 10
 
 # dimension of discretized position space
@@ -109,4 +109,10 @@ with open('n1n2.csv','w') as csvFile:
 
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
+slopeS = str(int(slope[0]*10000)/10000.0)
+slope_errS = str(int(slope_err*10000)/10000.0)
+interS = str(int(intercept[0]*1000)/1000.0)
+inter_errS = str(int(intercept_err*1000)/1000.0)
+print("slope: "+slopeS+" +/- "+slope_errS)
+print("intercept: "+interS+" +/- "+inter_errS)
 
