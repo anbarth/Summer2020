@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 fname = 'heatmap.csv'
-nMax = 5
+nMax = 10
 
 title = ""
 intercepts = []
@@ -26,7 +26,7 @@ fig, ax = plt.subplots()
 im = ax.imshow(intercepts)
 
 nLabel = []
-for n in range(nMax):
+for n in range(nMax+1):
     if np.mod(n,5) == 0:
         nLabel.append(str(n))
     else:

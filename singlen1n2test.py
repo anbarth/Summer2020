@@ -11,18 +11,19 @@ import multiprocessing as mp
 
 
 tic = time.time()
+random.seed()
 
 ### SET UP
-
-random.seed()
 n1 = 2
 n2 = 5
 left = -10
 right = 10
 dx = 2
-Nlist = [50,150,500]
-sampleSize = 100
+Nmax = 100
+#sampleSize = 50
 trials = 10
+#numTrialGroups = 10
+#trialGroupSize = 10
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -32,82 +33,49 @@ eigens = np.zeros((2,D))
 eigens[0] = shoEigenbra(n1,dx,left,right)
 eigens[1] = shoEigenbra(n2,dx,left,right)
 
-### PARALLEL SHIT??
-
-def calcOverlap(N):
-    #overlaps = np.zeros((nMax+1,nMax+1))
-    psizeta = np.zeros((2,N))
-    # pick N random vectors
-    for k in range(N):
-        zeta = [random.choice([-1,1]) for x in range(D)] # <z|
-        # TODO some complex conjugate nonesense might be needed here
-        psizeta[0][k] = np.dot(eigens[0], zeta) # <psi_n|z>
-        psizeta[1][k] = np.dot(eigens[1], zeta) # <psi_n|z>
-        
-    return np.vdot(psizeta[0], psizeta[1])*(1.0/N) 
-
-
 ### THE MEAT
-
-avgSig = np.zeros((len(Nlist),1))
-avgSig_err = np.zeros((len(Nlist),1))
-#intercepts = np.zeros((nMax+1,nMax+1))
-#intercept_errs = np.zeros((nMax+1,nMax+1))
-
-# get aaaaaaaaaall the dataaaaaaaaa
-for N_index in range(len(Nlist)):
-    N = Nlist[N_index]
-    sigmas = np.zeros((1,trials))
-    avgOverlaps = []
-    for i in range(trials):
-        # big ol' array for storing all them overlaps
+overlaps = np.zeros((Nmax,trials))
+for i in range(trials):
+    print("trial "+str(i))
+    psizeta = np.zeros((2,Nmax))
+    for N in range(1,Nmax+1):
+        zeta = [random.choice([-1,1]) for x in range(D)] # <z|
+        #col = np.zeros((nMax+1))
+        psizeta[0][N-1]=(np.dot(eigens[0], zeta)) # <psi_n1|z>
+        psizeta[1][N-1]=(np.dot(eigens[1], zeta)) # <psi_n2|z>
         
-        #__spec__ = "ModuleSpec(name='builtins', loader=<class '_frozen_importlib.BuiltinImporter'>)"
-        pool = mp.Pool(mp.cpu_count())
-        overlaps = [pool.apply(calcOverlap,args=[N]) for j in range(sampleSize)]
-        pool.close()
+        overlaps[N-1][i] = np.vdot(psizeta[0], psizeta[1])*(1.0/N)
 
-        # ok, overlaps array is filled in; now put data in sigmas
-        avgOverlaps.append(mean(overlaps))
-        sigmas[0][i] = stdev(overlaps)
-    
-    # ok, now i have all the sigmas. find avgs & std errs
-    avgSig[N_index] = mean(sigmas[0])
-    avgSig_err[N_index] = stdev(sigmas[0]) / np.sqrt(trials)
-    print(mean(avgOverlaps))
-# ok, now i have all the data i need to make a plot for every (n1,n2)
-lnN = [np.log(N) for N in Nlist]
 
-# here's the data i wanna work with
-lnSigma = [np.log(avgSig[x]) for x in range(len(Nlist))]
-lnSigma_err = [avgSig_err[x] / avgSig[x] for x in range(len(Nlist))]
+lnN = [np.log(N) for N in range(1,Nmax+1)]
+lnN_r = lnN[100:]
+lnSigma = np.zeros((Nmax))
 
-#plt.plot(lnN,lnSigma)
-#plt.show()
-# regress!
+for N in range(1,Nmax+1):
+    lnSigma[N-1] = np.log(stdev(overlaps[N-1]))
+
+lnSigma_r = lnSigma[100:]
 (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma)
 
 
-# write everything to a csv
 with open('n1n2.csv','w') as csvFile:
-#with open('n1n2.csv','w',newline='') as csvFile:
-    writer = csv.writer(csvFile, delimiter=',')
+    writer = csv.writer(csvFile,delimiter=',')
 
-    # write specs abt this run
-    writer.writerow(['n1='+str(n1)+', n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
-    writer.writerow(['sample size: '+str(sampleSize)+', '+str(trials)+' trials'])
+    writer.writerow(['n1='+str(n1)+', n2='+str(n2)])
+    writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
+    writer.writerow(['max N: '+str(Nmax)+', trials: '+str(trials)])
 
     # write slope and intercept
-    writer.writerow(['slope',slope[0],'slope err',slope_err])
-    writer.writerow(['incpt',intercept[0],'incpt err',intercept_err])
+    writer.writerow(['slope',slope,'slope err',slope_err])
+    writer.writerow(['incpt',intercept,'incpt err',intercept_err])
 
     # write ln sigma vs ln N
-    writer.writerow(['ln N','ln sigma','ln sigma err'])
-    for i in range(len(Nlist)):
-        writer.writerow([lnN[i],lnSigma[i][0],lnSigma_err[i][0]])
+    writer.writerow(['ln N','ln sigma'])
+    for i in range(len(lnN)):
+        writer.writerow([lnN[i],lnSigma[i]])
+
 
 
 
 toc = time.time()
-print("runtime (s): "+str(toc-tic))
-
+print('runtime (s): '+str(toc-tic))
