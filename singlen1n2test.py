@@ -14,14 +14,14 @@ tic = time.time()
 random.seed()
 
 ### SET UP
-n1 = 2
-n2 = 5
-left = -10
-right = 10
-dx = 2
-Nmax = 100
+n1 = 1
+n2 = 6
+left = -20
+right = 20
+dx = 0.05
+Nmax = 5000
 #sampleSize = 50
-trials = 10
+trials = 50
 #numTrialGroups = 10
 #trialGroupSize = 10
 
