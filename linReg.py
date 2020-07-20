@@ -29,7 +29,7 @@ def regress(x_arr, y_arr):
     R2 = (SST-SSE)/SST
     syx2 = SSE / (len(x_arr)-2)
     sm = math.sqrt( syx2 / SSxx )
-    sb = math.sqrt( syx2 * (1/len(x_arr) + x_bar*x_bar / SSxx) )
+    sb = math.sqrt( syx2 * (1.0/len(x_arr) + x_bar*x_bar / SSxx) )
 
     return (m, b, R2, sm, sb)
 
