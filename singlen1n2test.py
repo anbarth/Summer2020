@@ -21,7 +21,7 @@ right = 20
 dx = 0.05
 Nmax = 5000
 #sampleSize = 50
-trials = 50
+trials = 500
 #numTrialGroups = 10
 #trialGroupSize = 10
 
