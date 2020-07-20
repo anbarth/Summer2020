@@ -18,9 +18,9 @@ nMax = 10 # inclusive
 left = -20
 right = 20
 dx = 0.05
-Nmax = 1000
+Nmax = 5000
 #sampleSize = 50
-trials = 50
+trials = 100
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -34,6 +34,7 @@ for n in range(nMax+1):
 ### THE MEAT
 overlaps = np.zeros((nMax+1,nMax+1,Nmax,trials))
 for i in range(trials):
+    print("trial "+str(i))
     psizeta = np.zeros((nMax+1,Nmax))
     for N in range(1,Nmax+1):
         zeta = [random.choice([-1,1]) for x in range(D)] # <z|
