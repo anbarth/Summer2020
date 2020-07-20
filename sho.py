@@ -1,5 +1,35 @@
 import numpy as np
 import math
+
+def defectEigenstates(depth,width,center,left,right,dx,nMin,nMax):
+    # dimension of discretized position space
+    D = int((right-left)/dx)
+    wing = width/2.0
+
+    # define U
+    U = np.zeros((D))
+    x = left
+    for i in range(D):
+        pot = x*x
+        if x <= center+wing and x >= center-wing:
+            pot -= depth
+        U[i] = pot
+        x += dx
+
+    # construct H
+    ham = np.zeros((D,D))
+    for i in range(D):
+        # diagonal terms: U (potential)+2/dx^2 (kinetic)
+        ham[i][i] = U[i]+2/(dx*dx)
+        # tridiagonal terms: -1/dx^2 (kinetic)
+        if i > 0:
+            ham[i][i-1] = -1/(dx*dx)
+            ham[i-1][i] = -1/(dx*dx)
+
+    (E,psi) = eigh(ham,eigvals=(nMin,nMax+1))
+    psi = np.transpose(psi)
+    return (E,psi)
+
 def shoEigenket(n,dx,left,right):
     # dimension of discretized position space
     D = int((right-left)/dx)
