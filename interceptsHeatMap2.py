@@ -33,8 +33,8 @@ for n in range(nMax+1):
 
 ### THE MEAT
 overlaps = np.zeros((nMax+1,nMax+1,Nmax,trials))
-psizeta = np.zeros((nMax+1,Nmax))
 for i in range(trials):
+    psizeta = np.zeros((nMax+1,Nmax))
     for N in range(1,Nmax+1):
         zeta = [random.choice([-1,1]) for x in range(D)] # <z|
         #col = np.zeros((nMax+1))
