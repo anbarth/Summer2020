@@ -55,6 +55,7 @@ slope_errs = np.zeros((nMax+1,nMax+1))
 r_sqs = np.zeros((nMax+1,nMax+1))
 
 lnN = [np.log(N) for N in range(1,Nmax+1)]
+lnN_r = lnN[100:]
 lnSigma = np.zeros((nMax+1,nMax+1,Nmax))
 for n1 in range(nMax+1):
     for n2 in range(n1,nMax+1):
@@ -64,8 +65,8 @@ for n1 in range(nMax+1):
             #for i in range(numTrialGroups):
             #    theseSigs[i] = stdev(overlaps[n1][n2][N-1][trialGroupSize*i:trialGroupSize*(i+1)])
             #lnSigma[n1][n2][N-1] = mean(theseSigs)
-            
-        (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma[n1][n2])
+        lnSigma_r = lnSigma[n1][n2][100:]
+        (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN_r, lnSigma_r)
         intercepts[n1][n2] = intercept
         intercept_errs[n1][n2] = intercept_err
         slopes[n1][n2] = slope
