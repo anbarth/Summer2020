@@ -33,13 +33,14 @@ for n in range(nMax+1):
 
 ### THE MEAT
 overlaps = np.zeros((nMax+1,nMax+1,Nmax,trials))
+psizeta = np.zeros((nMax+1,Nmax))
 for i in range(trials):
     for N in range(1,Nmax+1):
         zeta = [random.choice([-1,1]) for x in range(D)] # <z|
-        psizeta = np.zeros((nMax+1))
+        #col = np.zeros((nMax+1))
         for n in range(nMax+1):
             # TODO some complex conjugate nonesense might be needed here
-            psizeta[n] = np.dot(eigens[n], zeta) # <psi_n|z>
+            psizeta[n][N-1]=(np.dot(eigens[n], zeta)) # <psi_n|z>
         for n1 in range(nMax+1):
             for n2 in range(n1,nMax+1):
                 overlaps[n1][n2][N-1][i] = np.vdot(psizeta[n1], psizeta[n2])*(1.0/N)
