@@ -20,8 +20,8 @@ n2 = 5
 left = -20
 right = 20
 dx = 0.05
-Nlist = [10,25,50,150,500,1000]
-sampleSize = 50
+Nlist = [5,10,25,50,150,500,1000]
+sampleSize = 500
 trials = 10
 
 # dimension of discretized position space
