@@ -19,8 +19,8 @@ left = -20
 right = 20
 dx = 0.05
 Nmax = 5000
-numTrialGroups = 5
-trialGroupSize = 10
+numTrialGroups = 100
+trialGroupSize = 100
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -69,11 +69,13 @@ def makeHeatMap():
     slopes = np.zeros((numTrialGroups,nMax+1,nMax+1))
     # TODO this could easily be made parallel processing
     # TODO for the love of god, find a better name than "theseIntercepts" @cs70 smh
-    for i in range(numTrialGroups):
-        print("trial group "+str(i))
-        (theseIntercepts, theseSlopes) = findInterceptsOnce()
-        intercepts[i] = theseIntercepts
-        slopes[i] = theseSlopes
+    #for i in range(numTrialGroups):
+    pool = mp.Pool(mp.cpu_count())
+    regression_results = [pool.apply_async(findInterceptsOnce,args=[]) for i in range(numTrialGroups)]
+    pool.close()
+    pool.join()
+    intercepts = [r.get()[0] for r in regression_results]
+    slopes = [r.get()[1] for r in regression_results]
 
     intercept_avgs = np.zeros((nMax+1,nMax+1))
     intercept_errs = np.zeros((nMax+1,nMax+1))
