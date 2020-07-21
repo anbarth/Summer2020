@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 fname = 'heatmap.csv'
-nMax = 10
+nMax = 5
 
 title = ""
 intercepts = []
@@ -11,14 +11,14 @@ with open(fname) as csvFile:
     reader = csv.reader(csvFile, delimiter=',')
     line = 0
     for row in reader:
-        if line > 2 and line <= 3+nMax:
+        if line > 23 and line <= 23+nMax+1:
             interceptsRow = [float(x) for x in row]
             intercepts.append(interceptsRow)
         elif line == 0:
             title = row[0]
         elif line == 1:
             title += '\n'+row[0]
-        # do nothing with line 2  
+        # do nothing with line 2-9  
         line += 1
 
 
