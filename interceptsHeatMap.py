@@ -10,10 +10,13 @@ import multiprocessing as mp
 
 
 
+
+
+### SET UP
 tic = time.time()
 random.seed()
 
-### SET UP
+# parameters
 nMax = 10 # inclusive
 left = -20
 right = 20
@@ -21,8 +24,7 @@ dx = 0.05
 Nmax = 5000
 #sampleSize = 50
 trials = 50
-#numTrialGroups = 10
-#trialGroupSize = 10
+
 
 # dimension of discretized position space
 D = int((right-left)/dx)

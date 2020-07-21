@@ -3,6 +3,11 @@ from matplotlib import pyplot as plt
 from matplotlib import animation
 from scipy.linalg import eigh
 
+# script for producing a short mp4 of a SHO+defect potential and its energy levels
+# this script was clunky and hard to use
+# see makeGif instead, it's better in every way
+
+
 # First set up the figure, the axis, and the plot element we want to animate
 fig = plt.figure()
 ax = plt.axes(xlim=(-3, 3), ylim=(-18, 15))
