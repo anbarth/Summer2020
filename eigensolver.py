@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sho import shoEigenket
 
+
+
 left = -15
 right = 15
 dx = 0.05
@@ -47,4 +49,3 @@ plt.plot(domain,psiTrue)
 plt.legend(['SHO w/ defect','SHO (analytic)'])
 plt.title('n = '+str(n))
 plt.show()
-
