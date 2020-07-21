@@ -10,16 +10,16 @@ import multiprocessing as mp
 
 
 
-tic = time.time()
+#tic = time.time()
 random.seed()
 
 ### SET UP
-nMax = 10 # inclusive
+nMax = 5 # inclusive
 left = -20
 right = 20
 dx = 0.05
 Nmax = 5000
-numTrialGroups = 10
+numTrialGroups = 5
 trialGroupSize = 10
 
 # dimension of discretized position space
@@ -34,7 +34,7 @@ for n in range(nMax+1):
 ### THE MEAT
 def findInterceptsOnce():
 
-    overlaps = np.zeros((nMax+1,nMax+1,Nmax,trials))
+    overlaps = np.zeros((nMax+1,nMax+1,Nmax,trialGroupSize))
     for i in range(trialGroupSize):
         psizeta = np.zeros((nMax+1,Nmax))
         for N in range(1,Nmax+1):
@@ -70,6 +70,7 @@ def makeHeatMap():
     # TODO this could easily be made parallel processing
     # TODO for the love of god, find a better name than "theseIntercepts" @cs70 smh
     for i in range(numTrialGroups):
+        print("trial group "+str(i))
         (theseIntercepts, theseSlopes) = findInterceptsOnce()
         intercepts[i] = theseIntercepts
         slopes[i] = theseSlopes
@@ -83,10 +84,10 @@ def makeHeatMap():
         for n2 in range(n1,nMax+1):
             theseIntercepts = [intercepts[i][n1][n2] for i in range(numTrialGroups)]
             theseSlopes = [slopes[i][n1][n2] for i in range(numTrialGroups)]
-            intercept_avg = mean(theseIntercepts)
-            intercept_err = stdev(theseIntercepts) / sqrt(numTrialGroups) #TODO to divide or not to divide?
-            slope_avg = mean(theseSlopes)
-            slope_err = stdev(theseSlopes) / sqrt(theseSlopes)
+            intercept_avgs[n1][n2] = mean(theseIntercepts)
+            intercept_errs[n1][n2] = stdev(theseIntercepts) / np.sqrt(numTrialGroups) #TODO to divide or not to divide?
+            slope_avgs[n1][n2] = mean(theseSlopes)
+            slope_errs[n1][n2] = stdev(theseSlopes) / np.sqrt(numTrialGroups)
 
     with open('heatmap.csv','w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
@@ -109,3 +110,8 @@ def makeHeatMap():
         writer.writerow(['slope errors'])
         for i in range(len(slope_errs)):
             writer.writerow(slope_errs[i])
+
+tic = time.time()
+makeHeatMap()
+toc = time.time()
+print("runtime (s): "+str(toc-tic))
