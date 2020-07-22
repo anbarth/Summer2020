@@ -17,8 +17,8 @@ nMax = 5 # inclusive
 left = -20
 right = 20
 dx = 0.05
-Nmax = 5000
-numRegressions = 10
+Nmax = 2000
+numRegressions = 100
 trialsPerRegression = 100
 
 # dimension of discretized position space
