@@ -4,7 +4,7 @@ import numpy as np
 from sho import shoEigenbra
 from myStats import mean,stdev
 from linReg import regress
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import csv
 import multiprocessing as mp
 
@@ -12,15 +12,15 @@ import multiprocessing as mp
 
 
 
-
+print("i am new! no, really!")
 ### SET UP
 nMax = 5 # inclusive
 left = -20
 right = 20
 dx = 0.05
-Nmax = 5000
-numRegressions = 10
-trialsPerRegression = 10
+Nmax = 20000
+numRegressions = 100
+trialsPerRegression = 100
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -98,7 +98,7 @@ def makeHeatMap():
             slope_errs[n1][n2] = stdev(theseSlopes) / np.sqrt(numRegressions)
 
     # write heatmap numbers to csv
-    with open('heatmap.csv','w') as csvFile:
+    with open('newheatmap.csv','w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
 
         writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
