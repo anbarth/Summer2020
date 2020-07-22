@@ -18,8 +18,8 @@ left = -20
 right = 20
 dx = 0.05
 Nmax = 2000
-numRegressions = 10
-trialsPerRegression = 100
+numRegressions = 100
+trialsPerRegression = 10
 
 # dimension of discretized position space
 D = int((right-left)/dx)
