@@ -12,11 +12,11 @@ import multiprocessing as mp
 
 
 ### SET UP
-nMax = 10 # inclusive
+nMax = 5 # inclusive
 left = -20
 right = 20
 dx = 0.05
-Nmax = 2500
+Nmax = 5000
 numRegressions = 100
 trialsPerRegression = 100
 
