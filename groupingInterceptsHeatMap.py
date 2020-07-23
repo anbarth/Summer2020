@@ -4,9 +4,7 @@ import time
 import random
 import numpy as np
 from sho import shoEigenbra,defectEigenstates
-from myStats import mean,stdev
-from linReg import regress
-#import matplotlib.pyplot as plt
+from myStats import mean,stdev,regress
 import csv
 import multiprocessing as mp
 
@@ -18,7 +16,9 @@ right = 20
 dx = 0.05
 Nmax = 5000
 numRegressions = 100
-trialsPerRegression = 100
+#trialsPerRegression = 100
+b = 1000
+a = 20
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -35,11 +35,14 @@ center = 0
 ### FUNCTION TO BE EXECUTED IN PARALLEL
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
 def regressOnce():
-    overlaps = np.zeros((nMax+1,nMax+1,Nmax,trialsPerRegression))
+    overlaps = np.zeros((nMax+1,nMax+1,Nmax,b))
     # run trials, aka, generate different sets of N random vectors
-    for i in range(trialsPerRegression):
-        # generate Nmax random vectors
-        for N in range(1,Nmax+1):
+    currNmax = Nmax
+    for i in range(b):
+        while i >= (a-b)*1.0/(Nmax-110)*(currNmax-110)+b:
+            currNmax -= 1
+        # generate currNmax random vectors
+        for N in range(1,currNmax+1):
             zeta = [random.choice([-1,1]) for x in range(D)] # <z|
             psizeta = np.zeros(nMax+1)
             for n in range(nMax+1):
@@ -56,15 +59,16 @@ def regressOnce():
     intercepts = np.zeros((nMax+1,nMax+1))
     slopes = np.zeros((nMax+1,nMax+1))
 
-    lnN = [np.log(N) for N in range(1,Nmax+1)]
-    lnN_r = lnN[100:]
-    lnSigma = np.zeros((nMax+1,nMax+1,Nmax))
+    lnN = [np.log(N) for N in range(100,Nmax+1)]
+    #lnN_r = lnN[100:]
+    lnSigma = np.zeros((nMax+1,nMax+1,Nmax+1-100))
     for n1 in range(nMax+1):
         for n2 in range(n1,nMax+1):
-            for N in range(1,Nmax+1):
-                lnSigma[n1][n2][N-1] = np.log(stdev(overlaps[n1][n2][N-1]))
-            lnSigma_r = lnSigma[n1][n2][100:]
-            (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN_r, lnSigma_r)
+            for N in range(100,Nmax+1):
+                # TODO this is hell
+                numTrials = min( b, int(1 + (a-b)*1.0/(Nmax-110)*(N-110)+b) )
+                lnSigma[n1][n2][N-100] = np.log(stdev(overlaps[n1][n2][N-100][0:numTrials])) 
+            (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma)
             intercepts[n1][n2] = intercept
             slopes[n1][n2] = slope
     
