@@ -10,6 +10,7 @@ from sho import shoEigenbra, shoEigenket
 # estimates the overlap using N stochastic vectors
 # does that many time (specified # of trials)
 # shows the histogram of overlap estimations
+# see july 1 log for many example outputs!
 def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,timing=True,fname='newfig.png'):
     ### STEP 1: SET UP
     tic = time.perf_counter()

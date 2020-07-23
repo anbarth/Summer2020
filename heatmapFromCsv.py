@@ -2,6 +2,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 
+# change these according to your needs
 fname = 'heatmap.csv'
 nMax = 10
 
@@ -10,6 +11,8 @@ intercepts = []
 intercept_errs = []
 slopes = []
 slope_errs = []
+
+# read data out of the heatmap file
 with open(fname) as csvFile:
     reader = csv.reader(csvFile, delimiter=',')
     line = 0
@@ -41,14 +44,14 @@ for n1 in range(nMax+1):
     for n2 in range(n1,nMax+1):
         slopeSigmaOff[n1][n2] = (slopes[n1][n2] + 0.5) / slope_errs[n1][n2]
 
-percentError = np.zeros((nMax+1,nMax+1))
+logPercentError = np.zeros((nMax+1,nMax+1))
 for n1 in range(nMax+1):
     for n2 in range(n1,nMax+1):
-        percentError[n1][n2] = np.log(np.abs(intercept_errs[n1][n2] / intercepts[n1][n2]))
+        logPercentError[n1][n2] = np.log(np.abs(intercept_errs[n1][n2] / intercepts[n1][n2]))
 
 fig, ax = plt.subplots()
-im = ax.imshow(percentError)
-title = "log % error on intercept\n"+title
+im = ax.imshow(intercepts)
+title = "Intercepts\n"+title
 
 nLabel = []
 for n in range(nMax+1):

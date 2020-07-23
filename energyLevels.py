@@ -37,7 +37,7 @@ for i in range(D):
 
 plt.clf()
 plt.xlim(plotLeft,plotRight)
-plt.ylim(-15,15)
+plt.ylim(-16,15)
 plt.plot(domain,U)
 for i in range(nMax):
     plt.plot(domain,[E[i]]*D,color='orange')

@@ -1,7 +1,9 @@
 import math
 from myStats import mean, stdev
-# output: slope, intercept, errors on each, R^2
 
+#TODO delete this file, i put this method in myStats
+# anna's homemade linear regression method
+# output: slope, intercept, errors on each, R^2
 def regress(x_arr, y_arr):
     y_bar = mean(y_arr)
     x_bar = mean(x_arr)
