@@ -5,8 +5,12 @@ import math
 import time
 import matplotlib.pyplot as plt
 import statistics
+from sho import shoEigenbra, shoEigenket
 
-def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,writeToCsv=True,timing=True,fname='newfig.png'):
+# estimates the overlap using N stochastic vectors
+# does that many time (specified # of trials)
+# shows the histogram of overlap estimations
+def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,timing=True,fname='newfig.png'):
     ### STEP 1: SET UP
     tic = time.perf_counter()
     plt.clf()
@@ -14,64 +18,25 @@ def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,writeToCsv=Tru
     # dimension of discretized position space
     D = int((right-left)/dx)
 
-    # construct the phi and psi matrices
-    psi = np.zeros((D,1))
-    phi = np.zeros((1,D))
-
-    # make hermite polynomial objects
-    n1_arr = [0]*(n1+1)
-    n1_arr[-1] = 1
-    n2_arr = [0]*(n2+1)
-    n2_arr[-1] = 1
-    herm1 = np.polynomial.hermite.Hermite(n1_arr,window=[left,right])
-    herm2 = np.polynomial.hermite.Hermite(n2_arr,window=[left,right])
-    herm1_arr = herm1.linspace(n=D)[1]
-    herm2_arr = herm2.linspace(n=D)[1]
-
-    # psi and phi's norm-squareds, so i can normalize later
-    norm1 = 0
-    norm2 = 0
-
-    x = left
-    for i in range(D):
-        psi[i][0] = math.exp(-1*x*x)*herm1_arr[i]
-        phi[0][i] = math.exp(-1*x*x)*herm2_arr[i]
-        norm1 += psi[i][0]*psi[i][0]
-        norm2 += phi[0][i]*phi[0][i]
-        x += dx
-    # normalize
-    psi = psi*(1/math.sqrt(norm1))
-    phi = phi*(1/math.sqrt(norm2))
-
-    ### STEP 2: RUN TRIALS
-    resultsTable = []
-
+    # get the appropriate eigenstates
+    psi = shoEigenket(n1,dx,left,right)
+    phi = shoEigenbra(n1,dx,left,right)
+  
+    ### STEP 2: CALCULATE OVERLAP MANY TIMES
+    overlaps = []
     for j in range(trials):
+        # calculate the overlap using N random vectors
         runningTot = 0
         for i in range(N):
-            zeta = [[random.choice([-1,1])] for i in range(D)]
+            zeta = [[random.choice([-1,1])] for i in range(D)] # |z>
             phizeta = np.matmul(phi, zeta) # <phi|z>
             zetapsi = np.matmul(np.transpose(zeta), psi) # <z|psi>
             prod = phizeta * zetapsi
             runningTot = runningTot + prod
-
         runningTot = runningTot*(1/N) 
-        resultsTable.append(runningTot[0][0])
-    
+        overlaps.append(runningTot[0][0])
 
-    ### STEP 4: OUTPUT
-    if writeToCsv:
-
-        with open('overlaps-histo.csv','w',newline='') as csvFile:
-            writer = csv.writer(csvFile, delimiter=',')
-
-            # write specs abt this run
-            writer.writerow(['n1='+str(n1)+'; n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']. N='+str(N)])
-
-            # write data from all trials
-            for i in range(len(resultsTable)):
-                writer.writerow([resultsTable[i]])
-
+    ### STEP 3: OUTPUT
     if timing:
         toc = time.perf_counter()
         print("runtime "+str(toc-tic))
@@ -82,8 +47,6 @@ def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,writeToCsv=Tru
         plt.figtext(.7,.75,'sigma='+str(sigma))
         plt.savefig(fname)
         #plt.show()
-
-
 
 n1=1
 n2=1
