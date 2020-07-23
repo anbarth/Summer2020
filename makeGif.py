@@ -28,13 +28,13 @@ def drawPlot(frameNum):
     # define U
     U = np.zeros((D))
     #wellBound = 0.25 + 2.5*np.abs(np.sin(0.05*frameNum))
-    wellCenter = 2.5*np.sin(0.05*frameNum)
+    #wellCenter = 2.5*np.sin(0.05*frameNum)
     x = left
     for i in range(D):
         pot = x*x
-        #if x <= 1 and x >= -1:
-        if x <= wellCenter+0.5 and x >= wellCenter-0.5:
-            pot -= 3
+        if x <= 1 and x >= -1:
+        #if x <= wellCenter+0.5 and x >= wellCenter-0.5:
+            pot -= 15
         U[i] = pot
         x += dx
 

@@ -2,7 +2,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 
-fname = 'july 21/july21-100x100.csv'
+fname = 'july 23/N5000-100x1000.csv'
 nMax = 5
 
 title = ""
@@ -44,6 +44,7 @@ for n1 in range(nMax+1):
 
 fig, ax = plt.subplots()
 im = ax.imshow(slopeSigmaOff)
+title = "Slope sigma off from -0.5\n"+title
 
 nLabel = []
 for n in range(nMax+1):
