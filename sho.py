@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from scipy.linalg import eigh
 
 def defectEigenstates(depth,width,center,left,right,dx,nMin,nMax):
     # dimension of discretized position space

@@ -13,13 +13,13 @@ import multiprocessing as mp
 
 
 ### SET UP
-nMax = 5 # inclusive
+nMax = 10 # inclusive
 left = -20
 right = 20
 dx = 0.05
-Nmax = 5000
+Nmax = 2500
 numRegressions = 100
-trialsPerRegression = 1000
+trialsPerRegression = 10
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -100,7 +100,7 @@ def makeHeatMap():
             slope_errs[n1][n2] = stdev(theseSlopes) / np.sqrt(numRegressions)
 
     # write heatmap numbers to csv
-    with open('bashheatmap.csv','w') as csvFile:
+    with open('heatmap.csv','w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
         writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
         writer.writerow(['max N: '+str(Nmax)+', trials: '+str(numRegressions)+' groups of '+str(trialsPerRegression)])

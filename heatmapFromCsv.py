@@ -2,8 +2,8 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 
-fname = 'july 23/N5000-100x1000.csv'
-nMax = 5
+fname = 'heatmap.csv'
+nMax = 10
 
 title = ""
 intercepts = []
@@ -43,8 +43,8 @@ for n1 in range(nMax+1):
 
 
 fig, ax = plt.subplots()
-im = ax.imshow(slopeSigmaOff)
-title = "Slope sigma off from -0.5\n"+title
+im = ax.imshow(intercepts)
+title = "Intercepts\n"+title
 
 nLabel = []
 for n in range(nMax+1):
