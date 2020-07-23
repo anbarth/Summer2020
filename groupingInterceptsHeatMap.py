@@ -1,7 +1,7 @@
 import time
 import random
 import numpy as np
-from sho import shoEigenbra
+from sho import shoEigenbra,defectEigenstates
 from myStats import mean,stdev
 from linReg import regress
 #import matplotlib.pyplot as plt
@@ -25,10 +25,13 @@ trialsPerRegression = 1000
 D = int((right-left)/dx)
 
 # get all eigenfunctions
-eigens = np.zeros((nMax+1,D))
-for n in range(nMax+1):
-    eigens[n] = shoEigenbra(n,dx,left,right)
-
+#eigens = np.zeros((nMax+1,D))
+#for n in range(nMax+1):
+#    eigens[n] = shoEigenbra(n,dx,left,right)
+depth = 15
+width = 2
+center = 0
+(energies, eigens) = defectEigenstates(depth,width,center,left,right,dx,0,nMax)
 
 ### FUNCTION TO BE EXECUTED IN PARALLEL
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
