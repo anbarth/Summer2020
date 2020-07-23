@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import time
 import random
 import numpy as np
@@ -9,9 +11,6 @@ import csv
 import multiprocessing as mp
 
 
-
-
-
 ### SET UP
 nMax = 10 # inclusive
 left = -20
@@ -19,7 +18,7 @@ right = 20
 dx = 0.05
 Nmax = 2500
 numRegressions = 100
-trialsPerRegression = 10
+trialsPerRegression = 100
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -29,7 +28,7 @@ D = int((right-left)/dx)
 #for n in range(nMax+1):
 #    eigens[n] = shoEigenbra(n,dx,left,right)
 depth = 15
-width = 2
+width = 1
 center = 0
 (energies, eigens) = defectEigenstates(depth,width,center,left,right,dx,0,nMax)
 
