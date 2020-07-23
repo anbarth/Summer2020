@@ -41,10 +41,14 @@ for n1 in range(nMax+1):
     for n2 in range(n1,nMax+1):
         slopeSigmaOff[n1][n2] = (slopes[n1][n2] + 0.5) / slope_errs[n1][n2]
 
+percentError = np.zeros((nMax+1,nMax+1))
+for n1 in range(nMax+1):
+    for n2 in range(n1,nMax+1):
+        percentError[n1][n2] = np.log(np.abs(intercept_errs[n1][n2] / intercepts[n1][n2]))
 
 fig, ax = plt.subplots()
-im = ax.imshow(intercepts)
-title = "Intercepts\n"+title
+im = ax.imshow(percentError)
+title = "log % error on intercept\n"+title
 
 nLabel = []
 for n in range(nMax+1):
