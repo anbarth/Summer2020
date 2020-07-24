@@ -10,15 +10,15 @@ import multiprocessing as mp
 
 
 ### SET UP
-nMax = 5 # inclusive
+nMax = 4 # inclusive
 left = -20
 right = 20
 dx = 0.05
 Nmax = 5000
-numRegressions = 100
+numRegressions = 10
 #trialsPerRegression = 100
-b = 1000
-a = 20
+a = 10
+b = 10
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -27,14 +27,16 @@ D = int((right-left)/dx)
 #eigens = np.zeros((nMax+1,D))
 #for n in range(nMax+1):
 #    eigens[n] = shoEigenbra(n,dx,left,right)
-depth = 15
-width = 1
+depth = 0
+width = 0
 center = 0
 (energies, eigens) = defectEigenstates(depth,width,center,left,right,dx,0,nMax)
+print(len(eigens))
 
 ### FUNCTION TO BE EXECUTED IN PARALLEL
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
 def regressOnce():
+    print("the boys are waiting")
     overlaps = np.zeros((nMax+1,nMax+1,Nmax,b))
     # run trials, aka, generate different sets of N random vectors
     currNmax = Nmax
@@ -45,9 +47,11 @@ def regressOnce():
         for N in range(1,currNmax+1):
             zeta = [random.choice([-1,1]) for x in range(D)] # <z|
             psizeta = np.zeros(nMax+1)
+          
             for n in range(nMax+1):
                 # TODO some complex conjugate nonesense might be needed here
                 psizeta[n] = np.dot(eigens[n], zeta) # <psi_n|z>
+         
             for n1 in range(nMax+1):
                 for n2 in range(n1,nMax+1):
                     # <psi_n1|psi_n2>  ~ sum over i( <psi_n1|z_i><z_i|psi_n2> ) / N
@@ -55,7 +59,7 @@ def regressOnce():
                         overlaps[n1][n2][N-1][i] = np.vdot(psizeta[n1], psizeta[n2])
                     else:
                         overlaps[n1][n2][N-1][i] = ( overlaps[n1][n2][N-2][i]*(N-1) + np.vdot(psizeta[n1], psizeta[n2]) ) * 1.0/N
-
+    print("warm it up")
     intercepts = np.zeros((nMax+1,nMax+1))
     slopes = np.zeros((nMax+1,nMax+1))
 
@@ -71,23 +75,27 @@ def regressOnce():
             (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma)
             intercepts[n1][n2] = intercept
             slopes[n1][n2] = slope
-    
-    return (intercepts, slopes)
+    print("apples n bananas")
+    return ('apples','bananas')
+    #return (intercepts, slopes)
 
 ### HEATMAP MAKING FUNCTION
 def makeHeatMap():
-    intercepts = np.zeros((numRegressions,nMax+1,nMax+1))
-    slopes = np.zeros((numRegressions,nMax+1,nMax+1))
+    #intercepts = np.zeros((numRegressions,nMax+1,nMax+1))
+    #slopes = np.zeros((numRegressions,nMax+1,nMax+1))
     # TODO for the love of god, find a better name than "theseIntercepts" @cs70 smh
     # perform several regressions in parallel
     pool = mp.Pool(mp.cpu_count())
     regression_results = [pool.apply_async(regressOnce,args=[]) for i in range(numRegressions)]
+    #intercepts = [r.get()[0] for r in regression_results]
+    #slopes = [r.get()[1] for r in regression_results]
     pool.close()
     pool.join()
     # collect the intercepts & slopes of those regressions
+    print(len(regression_results))
     intercepts = [r.get()[0] for r in regression_results]
     slopes = [r.get()[1] for r in regression_results]
-
+    print("here")
     # find the avg & std err of the intercepts & slopes
     intercept_avgs = np.zeros((nMax+1,nMax+1))
     intercept_errs = np.zeros((nMax+1,nMax+1))
