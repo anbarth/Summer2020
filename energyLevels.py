@@ -10,7 +10,7 @@ dx = 0.05
 D = int((right-left)/dx)
 domain = np.linspace(left,right,D,endpoint=False)
 
-depth = 15
+depth = 30
 width = 1
 center = 0
 
@@ -37,7 +37,7 @@ for i in range(D):
 
 plt.clf()
 plt.xlim(plotLeft,plotRight)
-plt.ylim(-16,15)
+plt.ylim(-31,15)
 plt.plot(domain,U)
 for i in range(nMax):
     plt.plot(domain,[E[i]]*D,color='orange')

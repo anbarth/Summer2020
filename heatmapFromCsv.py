@@ -4,7 +4,7 @@ import numpy as np
 
 # change these according to your needs
 fname = 'heatmap.csv'
-nMax = 10
+nMax = 5
 
 title = ""
 intercepts = []
@@ -50,8 +50,8 @@ for n1 in range(nMax+1):
         logPercentError[n1][n2] = np.log(np.abs(intercept_errs[n1][n2] / intercepts[n1][n2]))
 
 fig, ax = plt.subplots()
-im = ax.imshow(intercepts)
-title = "Intercepts\n"+title
+im = ax.imshow(intercept_errs)
+title = "Intercept errors\n"+title
 
 nLabel = []
 for n in range(nMax+1):
