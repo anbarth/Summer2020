@@ -1,26 +1,32 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from sho import shoEigenbra,shoEigenket
+from sho import shoEigenbra,shoEigenket,defectEigenstates
 
 def orthoCheck(nMax,dx,bound):
-    overlaps = np.zeros((nMax,nMax))
-
+    depth = 0
+    width = 0
+    center = 0
+    
     # dimension of discretized position space
     left = -bound
     right = bound
     D = int((right-left)/dx)
 
+    (E,psi) = defectEigenstates(depth,width,center,left,right,dx,0,nMax)
+
+    overlaps = np.zeros((nMax,nMax))
+
+   
+
     for n1 in range(0,nMax):
-        # construct the psi vector...
-        psi = shoEigenket(n1,dx,left,right)
+        psi1 = psi[n1]
 
         for n2 in range(n1,nMax):
-            # construct the phi vector...
-            phi = shoEigenbra(n2,dx,left,right)
+            psi2 = psi[n2]
 
-            overlap = np.matmul(phi,psi)
-            overlaps[n1][n2] = overlap[0][0]
+            overlap = np.vdot(psi1,psi2)
+            overlaps[n1][n2] = overlap
 
     ### make heatmap
     fig, ax = plt.subplots()
@@ -47,4 +53,4 @@ def orthoCheck(nMax,dx,bound):
     fig.tight_layout()
     plt.show() 
 
-orthoCheck(51,0.025,20)
+orthoCheck(51,0.025,30)
