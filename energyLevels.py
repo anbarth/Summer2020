@@ -1,7 +1,7 @@
 from scipy.linalg import eigh
 import numpy as np
 import matplotlib.pyplot as plt
-from sho import defectEigenstates
+from sho import defectEigenstates, shoEigenbra, shoEigenket
 
 left = -15
 right = 15
@@ -10,7 +10,7 @@ dx = 0.05
 D = int((right-left)/dx)
 domain = np.linspace(left,right,D,endpoint=False)
 
-depth = 30
+depth = 100
 width = 1
 center = 0
 
@@ -37,13 +37,23 @@ for i in range(D):
 
 plt.clf()
 plt.xlim(plotLeft,plotRight)
-plt.ylim(-31,15)
+plt.ylim(-95,-90)
+#plt.ylim(-76,-71)
+#plt.ylim(-44,-39)
+#plt.ylim(-7,-2)
+#plt.ylim(0,100)
 plt.plot(domain,U)
-for i in range(nMax):
-    plt.plot(domain,[E[i]]*D,color='orange')
-    if psi[i][int(D/6)] < 0:
-        psi[i] = psi[i] * -1
-    plt.plot(domain,3*psi[i]+E[i],color='black')
+for n in range(nMax):
+    psi_reg = shoEigenket(n,dx,left,right)
+    plt.plot(domain,[E[n]]*D,color='orange')
+    if psi[n][int(D/6)] < 0:
+        psi[n] = psi[n] * -1
+    if psi_reg[int(D/6)] < 0:
+        psi_reg = psi_reg * -1
+    #psi[n] = psi[n]*3
+    #psi_reg = psi_reg*3
+    plt.plot(domain,3*psi[n]+E[n],color='black')
+    plt.plot(domain,3*psi_reg+E[n],color='green')
 
 
 plt.show()
