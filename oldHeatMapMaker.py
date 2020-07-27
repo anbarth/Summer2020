@@ -12,13 +12,13 @@ import multiprocessing as mp
 
 
 ### SET UP
-nMax = 5 # inclusive
+nMax = 10 # inclusive
 left = -20
 right = 20
 dx = 0.05
 Nmax = 5000
-numRegressions = 100
-trialsPerRegression = 100
+numRegressions = 1000
+trialsPerRegression = 1000
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -27,14 +27,15 @@ D = int((right-left)/dx)
 #eigens = np.zeros((nMax+1,D))
 #for n in range(nMax+1):
 #    eigens[n] = shoEigenbra(n,dx,left,right)
-depth = 15
-width = 1
+depth = 0
+width = 0
 center = 0
 (energies, eigens) = defectEigenstates(depth,width,center,left,right,dx,0,nMax)
 
 ### FUNCTION TO BE EXECUTED IN PARALLEL
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
 def regressOnce():
+    print('regressOnce')
     overlaps = np.zeros((nMax+1,nMax+1,Nmax,trialsPerRegression))
     # run trials, aka, generate different sets of N random vectors
     for i in range(trialsPerRegression):
@@ -99,7 +100,7 @@ def makeHeatMap():
             slope_errs[n1][n2] = stdev(theseSlopes) / np.sqrt(numRegressions)
 
     # write heatmap numbers to csv
-    with open('heatmap.csv','w') as csvFile:
+    with open('newheatmap.csv','w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
         writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
         writer.writerow(['max N: '+str(Nmax)+', trials: '+str(numRegressions)+' groups of '+str(trialsPerRegression)])
