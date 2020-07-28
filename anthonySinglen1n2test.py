@@ -13,10 +13,10 @@ import multiprocessing as mp
 ### SET UP
 n1 = 1
 n2 = 2
-left = -5
-right = 5
-dx = 1
-Nmax = 150
+left = -20
+right = 20
+dx = 0.05
+Nmax = 5000
 #numRegressions = 50
 #trialsPerRegression = 1000
 
