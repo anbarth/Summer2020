@@ -60,7 +60,7 @@ def regressOnce():
     lnSigma = np.zeros((Nmax+1-100))
 
     for N in range(100,Nmax+1):
-        lnSigma[N-100] = np.log(stdev(overlaps[N-100]))
+        lnSigma[N-100] = np.log(stdev(overlaps[N-1]))
     (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma)
 
 
