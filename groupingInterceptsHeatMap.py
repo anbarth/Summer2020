@@ -73,7 +73,7 @@ def regressOnce():
                 # TODO this is hell
                 # TODO also does lnSigma need have an (n1,n2) dimension??
                 numTrials = min( b, int(1 + (a-b)*1.0/(Nmax-110)*(N-110)+b) )
-                lnSigma[n1][n2][N-100] = np.log(stdev(overlaps[n1][n2][N-100][0:numTrials]))
+                lnSigma[n1][n2][N-100] = np.log(stdev(overlaps[n1][n2][N-1][0:numTrials]))
             (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma[n1][n2])
             intercepts[n1][n2] = intercept
             slopes[n1][n2] = slope
