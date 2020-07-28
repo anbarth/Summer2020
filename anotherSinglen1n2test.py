@@ -38,14 +38,14 @@ psi2 = eigens[n2]
 ### FUNCTION TO BE EXECUTED IN PARALLEL
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
 def regressOnce():
-    overlaps = np.zeros((Nmax,b))
+    overlaps = np.zeros((Nmax,trialsPerRegression))
     # run trials, aka, generate different sets of N random vectors
     for i in range(trialsPerRegression):
         # generate Nmax vectors
         for N in range(1,Nmax+1):
             zeta = [random.choice([-1,1]) for x in range(D)] # <z|
-            psi1zeta[n] = np.dot(psi1, zeta) # <psi_1|z>
-            psi2zeta[n] = np.dot(psi2, zeta) # <psi_2|z>
+            psi1zeta = np.dot(psi1, zeta) # <psi_1|z>
+            psi2zeta = np.dot(psi2, zeta) # <psi_2|z>
          
             # <psi_n1|psi_n2>  ~ sum over i( <psi_n1|z_i><z_i|psi_n2> ) / N
             if N == 1:
@@ -60,19 +60,20 @@ def regressOnce():
     lnSigma = np.zeros((Nmax+1-100))
 
     for N in range(100,Nmax+1):
-        lnSigma[N-100] = np.log(stdev(overlaps[N-100][0:numTrials]))
-    (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma[n1][n2])
+        lnSigma[N-100] = np.log(stdev(overlaps[N-100]))
+    (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN, lnSigma)
 
 
     avgOverlap = mean(overlaps[Nmax-1])
-    
+    print(avgOverlap)
+
     ### WRITE OUTPUT
     with open('n1n2.csv','w') as csvFile:
         writer = csv.writer(csvFile, delimiter=',')
 
         # write specs abt this run
         writer.writerow(['n1='+str(n1)+', n2='+str(n2)+'. dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
-        writer.writerow(['Nmax: '+str(Nmax)+', '+str(numTrials)+' trials'])
+        writer.writerow(['Nmax: '+str(Nmax)+', '+str(trialsPerRegression)+' trials'])
 
         # write slope and intercept
         writer.writerow(['slope',slope,'slope err',slope_err])
@@ -82,11 +83,11 @@ def regressOnce():
         # write ln sigma vs ln N
         writer.writerow(['ln N','ln sigma '])
         for i in range(Nmax-100):
-            writer.writerow([lnN_r[i],lnSigma[i]])
+            writer.writerow([lnN[i],lnSigma[i]])
 
 
 random.seed()
 tic = time.time()
-makeHeatMap()
+regressOnce()
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
