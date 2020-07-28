@@ -33,7 +33,6 @@ center = 0
 def regressOnce():
     print('regressOnce')
     overlaps = np.zeros((nMax+1,nMax+1,Nmax))
-    overlaps_b = np.zeros((nMax+1,nMax+1,Nmax))
     # run trials, aka, generate different sets of N random vectors
 
     # generate Nmax random vectors
@@ -46,7 +45,6 @@ def regressOnce():
         for n1 in range(nMax+1):
             for n2 in range(n1,nMax+1):
                 # <psi_n1|psi_n2>  ~ sum over i( <psi_n1|z_i><z_i|psi_n2> ) / N
-                overlaps_b[n1][n2][N-1] = np.vdot(psizeta[n1],psizeta[n2])
                 if N == 1:
                     overlaps[n1][n2][N-1] = np.vdot(psizeta[n1], psizeta[n2])
                 else:
@@ -54,27 +52,21 @@ def regressOnce():
 
     intercepts = np.zeros((nMax+1,nMax+1))
     slopes = np.zeros((nMax+1,nMax+1))
-    intercepts_b = np.zeros((nMax+1,nMax+1))
-    slopes_b = np.zeros((nMax+1,nMax+1))
     
 
     lnN = [np.log(N) for N in range(1,Nmax+1)]
     lnN_r = lnN[100:]
     lnSigma = np.zeros((nMax+1,nMax+1,Nmax-100))
-    lnSigma_b = np.zeros((nMax+1,nMax+1,Nmax-100))
     for n1 in range(nMax+1):
         for n2 in range(n1,nMax+1):
             for N in range(100,Nmax):
                 lnSigma[n1][n2][N-100] = np.log(stdev(overlaps[n1][n2][0:N+1]))
-                lnSigma_b[n1][n2][N-100] = np.log(stdev(overlaps_b[n1][n2][0:N+1]))
             #lnSigma_r = lnSigma[n1][n2][100:]
             #print(len(lnN_r),' ',len(lnSigma))
             (slope, intercept, r_sq, slope_err, intercept_err) = regress(lnN_r, lnSigma[n1][n2])
-            (slope_b,intercept_b,garbage,trash,laji) = regress(lnN_r, lnSigma_b[n1][n2])
             intercepts[n1][n2] = intercept
             slopes[n1][n2] = slope
-            intercepts_b[n1][n2] = intercept_b
-            slopes_b[n1][n2] = slope_b
+
     
     avgOverlaps = np.zeros((nMax+1,nMax+1))
     for n1 in range(nMax+1):
@@ -82,7 +74,7 @@ def regressOnce():
             avgOverlaps[n1][n2] = overlaps[n1][n2][Nmax-1]
 
 
-    return (intercepts, slopes,avgOverlaps,intercepts_b,slopes_b)
+    return (intercepts, slopes,avgOverlaps)
 
 ### HEATMAP MAKING FUNCTION
 def makeHeatMap():
@@ -97,9 +89,6 @@ def makeHeatMap():
     # collect the intercepts & slopes of those regressions
     intercepts = [r.get()[0] for r in regression_results]
     slopes = [r.get()[1] for r in regression_results]
-
-    intercepts_b = [r.get()[3] for r in regression_results]
-    slopes_b = [r.get()[4] for r in regression_results]
     overlaps = [r.get()[2] for r in regression_results]
     
     # find the avg & std err of the intercepts & slopes
@@ -118,19 +107,7 @@ def makeHeatMap():
             slope_avgs[n1][n2] = mean(theseSlopes)
             slope_errs[n1][n2] = stdev(theseSlopes) / np.sqrt(numRegressions)
             overlap_avgs[n1][n2] = mean(theseOverlaps)
-    # find the avg & std err of the intercepts & slopes
-    intercept_bavgs = np.zeros((nMax+1,nMax+1))
-    intercept_berrs = np.zeros((nMax+1,nMax+1))
-    slope_bavgs = np.zeros((nMax+1,nMax+1))
-    slope_berrs = np.zeros((nMax+1,nMax+1))
-    for n1 in range(nMax+1):
-        for n2 in range(n1,nMax+1):
-            theseIntercepts = [intercepts_b[i][n1][n2] for i in range(numRegressions)]
-            theseSlopes = [slopes_b[i][n1][n2] for i in range(numRegressions)]
-            intercept_bavgs[n1][n2] = mean(theseIntercepts)
-            intercept_berrs[n1][n2] = stdev(theseIntercepts) / np.sqrt(numRegressions) #TODO to divide or not to divide?
-            slope_bavgs[n1][n2] = mean(theseSlopes)
-            slope_berrs[n1][n2] = stdev(theseSlopes) / np.sqrt(numRegressions)
+
     
     # write heatmap numbers to csv
     with open('anthonyheatmap.csv','w') as csvFile:
@@ -153,22 +130,6 @@ def makeHeatMap():
         writer.writerow(['slope errors'])
         for i in range(len(slope_errs)):
             writer.writerow(slope_errs[i])
-
-        writer.writerow(['intercepts_b'])
-        for i in range(len(intercept_bavgs)):
-            writer.writerow(intercept_bavgs[i])
-
-        writer.writerow(['intercept errors_b'])
-        for i in range(len(intercept_berrs)):
-            writer.writerow(intercept_berrs[i])
-
-        writer.writerow(['slopes_b'])
-        for i in range(len(slope_bavgs)):   
-            writer.writerow(slope_bavgs[i])
-
-        writer.writerow(['slope errors_b'])
-        for i in range(len(slope_berrs)):
-            writer.writerow(slope_berrs[i])
 
         writer.writerow(['overlaps'])
         for i in range(len(overlaps_avgs)):
