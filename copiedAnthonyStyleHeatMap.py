@@ -10,7 +10,7 @@ import multiprocessing as mp
 
 
 ### SET UP
-nMax = 5 # inclusive
+nMax = 10 # inclusive
 left = -20
 right = 20
 dx = 0.05
@@ -42,7 +42,7 @@ def returnSlopeHeat():
     maxOrder = nMax
     maxSamples = Nmax
     #vals = eigens
-    stdev = np.zeros((maxOrder, maxOrder+1, maxSamples + 1), dtype=float)
+    stdev = np.zeros((maxOrder+1, maxOrder+1, maxSamples + 1), dtype=float)
     for sample in range(1, maxSamples + 1):
         #print(sample)
         chi = np.random.rand(np.shape(eigens)[1])
@@ -131,6 +131,7 @@ def makeHeatMap():
 
 random.seed()
 tic = time.time()
-makeHeatMap()
+returnSlopeHeat()
+#makeHeatMap()
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
