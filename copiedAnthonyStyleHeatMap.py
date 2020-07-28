@@ -42,15 +42,15 @@ def returnSlopeHeat():
     maxOrder = nMax
     maxSamples = Nmax
     #vals = eigens
-    stdev = np.zeros((maxOrder, maxOrder, maxSamples + 1), dtype=float)
+    stdev = np.zeros((maxOrder, maxOrder+1, maxSamples + 1), dtype=float)
     for sample in range(1, maxSamples + 1):
         #print(sample)
         chi = np.random.rand(np.shape(eigens)[1])
         for k in range(np.size(chi)):
             if chi[k] < 0.5: chi[k] = -1.
             if chi[k] >= 0.5: chi[k] = 1.
-        for i in range(0, maxOrder):
-            for j in range(i, maxOrder):
+        for i in range(0, maxOrder+1):
+            for j in range(i, maxOrder+1):
                 sm = sum(eigens[i] * chi) * sum(eigens[j] * chi)
                 if i == j:
                     sm = sm-1
@@ -59,8 +59,9 @@ def returnSlopeHeat():
                 stdev[i][j][sample] = np.sqrt(abs((avg ** 2) - avg2)) / np.sqrt(float(sample))
     slopes = np.zeros((maxOrder + 1, maxOrder + 1))
     intercepts = np.zeros((maxOrder + 1, maxOrder + 1))
-    for i in range(0, maxOrder):
-        for j in range(i, maxOrder):
+
+    for i in range(0, maxOrder+1):
+        for j in range(i, maxOrder+1):
             domainSamples = range(1, maxSamples + 1)
             slopes[i, j], intercepts[i,j] = np.polyfit(np.log(domainSamples[100:]), np.log(stdev[i][j][101:]), 1)
             if i != j:
