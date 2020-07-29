@@ -73,7 +73,7 @@ def returnSlopeHeat():
     
     # normalize sorta TODO this is stupid too
     avgSlope = np.sum(slopes) / ((nMax+1)*(nMax+1))
-    slopes = slopes - avgSlope
+    #slopes = slopes - avgSlope
     
     avgIntercept = np.sum(intercepts) / ((nMax+1)*(nMax+1))
     intercepts = intercepts - avgIntercept
@@ -116,10 +116,10 @@ def makeHeatMap():
             slope_avgs[n1][n2] = mean(theseSlopes)
             slope_errs[n1][n2] = stdev(theseSlopes) / np.sqrt(numRegressions)
             if n1 != n2:
-                intercept_avgs[n1][n2] = intercept_avgs[n2][n1]
-                intercept_errs[n1][n2] = intercept_errs[n2][n1]
-                slope_avgs[n1][n2] = slope_avgs[n2][n1]
-                slope_errs[n1][n2] = slope_errs[n2][n1]
+                intercept_avgs[n2][n1] = intercept_avgs[n1][n2]
+                intercept_errs[n2][n1] = intercept_errs[n1][n2]
+                slope_avgs[n2][n1] = slope_avgs[n1][n2]
+                slope_errs[n2][n1] = slope_errs[n1][n2]
 
 
     # write heatmap numbers to csv
