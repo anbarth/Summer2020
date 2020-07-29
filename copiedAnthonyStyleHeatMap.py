@@ -109,7 +109,7 @@ def makeHeatMap():
     # write heatmap numbers to csv
     with open('theheatmap.csv','w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
-        writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
+        writer.writerow(['hi! dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
         writer.writerow(['max N: '+str(Nmax)+', trials: '+str(numRegressions)])
 
         writer.writerow(['intercepts'])
@@ -131,7 +131,7 @@ def makeHeatMap():
 
 random.seed()
 tic = time.time()
-returnSlopeHeat()
-#makeHeatMap()
+#returnSlopeHeat()
+makeHeatMap()
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
