@@ -10,7 +10,7 @@ import multiprocessing as mp
 
 
 ### SET UP
-nMax = 10 # inclusive
+nMax = 20 # inclusive
 left = -20
 right = 20
 dx = 0.05
@@ -49,8 +49,10 @@ def returnSlopeHeat():
         for k in range(np.size(chi)):
             if chi[k] < 0.5: chi[k] = -1.
             if chi[k] >= 0.5: chi[k] = 1.
-        for i in range(0, maxOrder+1):
-            for j in range(i, maxOrder+1):
+        #for i in range(0, maxOrder+1):
+        #    for j in range(i, maxOrder+1):
+        for i in range(maxOrder,-1,-1):
+            for j in range(maxOrder,i-1,-1):
                 sm = sum(eigens[i] * chi) * sum(eigens[j] * chi)
                 if i == j:
                     sm = sm-1
@@ -109,7 +111,7 @@ def makeHeatMap():
     # write heatmap numbers to csv
     with open('theheatmap.csv','w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
-        writer.writerow(['hi! dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
+        writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
         writer.writerow(['max N: '+str(Nmax)+', trials: '+str(numRegressions)])
 
         writer.writerow(['intercepts'])
