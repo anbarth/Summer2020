@@ -37,6 +37,7 @@ center = 0
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
 
 def returnSlopeHeat():
+    print("one trial")
     avg = 0.
     avg2 = 0.
     maxOrder = nMax
@@ -49,8 +50,10 @@ def returnSlopeHeat():
         for k in range(np.size(chi)):
             if chi[k] < 0.5: chi[k] = -1.
             if chi[k] >= 0.5: chi[k] = 1.
-        for i in range(0, maxOrder+1):
-            for j in range(i, maxOrder+1):
+        #for i in range(0, maxOrder+1):
+        #    for j in range(i, maxOrder+1):
+        for i in range(maxOrder,-1,-1):
+            for j in range(maxOrder,i-1,-1):
                 sm = sum(eigens[i] * chi) * sum(eigens[j] * chi)
                 if i == j:
                     sm = sm-1
