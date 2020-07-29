@@ -37,7 +37,7 @@ center = 0
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
 
 def returnSlopeHeat():
-    print("one trial")
+    #print("one trial")
     avg = 0.
     avg2 = 0.
     maxOrder = nMax
@@ -110,9 +110,9 @@ def makeHeatMap():
             #overlap_errs[n1][n2] = stdev(theseOverlaps) / np.sqrt(numRegressions)
 
     # write heatmap numbers to csv
-    with open('theheatmap.csv','w') as csvFile:
+    with open('heatmap.csv','w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
-        writer.writerow(['hi! dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
+        writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
         writer.writerow(['max N: '+str(Nmax)+', trials: '+str(numRegressions)])
 
         writer.writerow(['intercepts'])
