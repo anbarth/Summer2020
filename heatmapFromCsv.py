@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # change these according to your needs
-fname = 'theheatmap.csv'
-nMax = 5
+fname = 'data/july 29/subtractAvg2.csv'
+#fname = 'heatmap.csv'
+nMax = 10
 
 title = ""
 
@@ -37,10 +38,7 @@ slopes = data[2]
 slope_errs = data[3]
 overlaps = data[4]
 overlap_errs = data[5]
-#interceptsb = data[4]
-#interceptb_errs = data[5]
-#slopesb = data[6]
-#slopeb_errs = data[7]
+
 
 slopeSigmaOff = np.zeros((nMax+1,nMax+1))
 for n1 in range(nMax+1):
@@ -53,8 +51,8 @@ for n1 in range(nMax+1):
         logPercentError[n1][n2] = np.log(np.abs(intercept_errs[n1][n2] / intercepts[n1][n2]))
 
 fig, ax = plt.subplots()
-#im = ax.imshow(intercepts)
-#title = "Intercepts\n"+title
+im = ax.imshow(intercepts,cmap="nipy_spectral")
+title = "Intercepts\n"+title
 #im = ax.imshow(intercept_errs)
 #title = "Intercept errors\n"+title
 #im = ax.imshow(slopes)
@@ -63,8 +61,8 @@ fig, ax = plt.subplots()
 #title = "Slope errors\n"+title
 #im = ax.imshow(overlaps)
 #title = "Overlaps\n"+title
-im = ax.imshow(slopeSigmaOff)
-title = "Slope sigma off from -0.5\n"+title
+#im = ax.imshow(slopeSigmaOff)
+#title = "Slope sigma off from -0.5\n"+title
 #im = ax.imshow(overlap_errs)
 #title = "Overlap errors\n"+title
 #im = ax.imshow(logPercentError)

@@ -37,7 +37,7 @@ center = 0
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
 
 def returnSlopeHeat():
-    #print("one trial")
+    print("one trial")
     avg = 0.
     avg2 = 0.
     maxOrder = nMax
@@ -115,9 +115,12 @@ def makeHeatMap():
             intercept_errs[n1][n2] = stdev(theseIntercepts) / np.sqrt(numRegressions) #TODO to divide or not to divide?
             slope_avgs[n1][n2] = mean(theseSlopes)
             slope_errs[n1][n2] = stdev(theseSlopes) / np.sqrt(numRegressions)
+            if n1 != n2:
+                intercept_avgs[n1][n2] = intercept_avgs[n2][n1]
+                intercept_errs[n1][n2] = intercept_errs[n2][n1]
+                slope_avgs[n1][n2] = slope_avgs[n2][n1]
+                slope_errs[n1][n2] = slope_errs[n2][n1]
 
-            #overlap_avgs[n1][n2] = mean(theseOverlaps)
-            #overlap_errs[n1][n2] = stdev(theseOverlaps) / np.sqrt(numRegressions)
 
     # write heatmap numbers to csv
     with open('heatmap.csv','w') as csvFile:
@@ -144,7 +147,6 @@ def makeHeatMap():
 
 random.seed()
 tic = time.time()
-#returnSlopeHeat()
 makeHeatMap()
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
