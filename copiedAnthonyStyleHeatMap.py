@@ -70,7 +70,15 @@ def returnSlopeHeat():
             if i != j:
                 slopes[j,i] = slopes[i,j]
                 intercepts[j, i] = intercepts[i, j]
-    return slopes, intercepts
+    
+    # normalize sorta TODO this is stupid too
+    avgSlope = np.sum(slopes) / ((nMax+1)*(nMax+1))
+    slopes = slopes - avgSlope
+    
+    avgIntercept = np.sum(intercepts) / ((nMax+1)*(nMax+1))
+    intercepts = intercepts - avgIntercept
+
+    return slopes, intercepts, avgSlope, avgIntercept
 
 
 ### HEATMAP MAKING FUNCTION
@@ -86,8 +94,10 @@ def makeHeatMap():
     pool.join()
     # collect the intercepts & slopes of those regressions
     print(len(regression_results))
-    intercepts = [r.get()[1] for r in regression_results]
     slopes = [r.get()[0] for r in regression_results]
+    intercepts = [r.get()[1] for r in regression_results]
+    slope_centers = [r.get()[2] for r in regression_results]
+    intercept_centers = [r.get()[3] for r in regression_results]
 
     # find the avg & std err of the intercepts & slopes
     intercept_avgs = np.zeros((nMax+1,nMax+1))
