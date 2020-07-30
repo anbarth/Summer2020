@@ -10,7 +10,7 @@ import multiprocessing as mp
 
 
 ### SET UP
-nMax = 10 # inclusive
+nMax = 50 # inclusive
 left = -20
 right = 20
 dx = 0.05
