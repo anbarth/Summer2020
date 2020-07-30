@@ -10,7 +10,7 @@ import multiprocessing as mp
 
 
 ### SET UP
-nMax = 50 # inclusive
+nMax = 10 # inclusive
 left = -20
 right = 20
 dx = 0.05
@@ -38,8 +38,8 @@ center = 0
 
 def returnSlopeHeat():
     print("one trial")
-    avg = 0.
-    avg2 = 0.
+    avg = np.zeros((nMax+1,nMax+1))
+    avg2 = np.zeros((nMax+1,nMax+1))
     maxOrder = nMax
     maxSamples = Nmax
     #vals = eigens
@@ -50,16 +50,16 @@ def returnSlopeHeat():
         for k in range(np.size(chi)):
             if chi[k] < 0.5: chi[k] = -1.
             if chi[k] >= 0.5: chi[k] = 1.
-        #for i in range(0, maxOrder+1):
-        #    for j in range(i, maxOrder+1):
-        for i in range(maxOrder,-1,-1):
-            for j in range(maxOrder,i-1,-1):
+        for i in range(0, maxOrder+1):
+            for j in range(i, maxOrder+1):
+        #for i in range(maxOrder,-1,-1):
+        #    for j in range(maxOrder,i-1,-1):
                 sm = sum(eigens[i] * chi) * sum(eigens[j] * chi)
                 if i == j:
                     sm = sm-1
-                avg = (avg * float(sample - 1) + sm) / float(sample)
-                avg2 = (avg2 * float(sample - 1) + sm ** 2.) / float(sample)
-                stdev[i][j][sample] = np.sqrt(abs((avg ** 2) - avg2)) / np.sqrt(float(sample))
+                avg[i][j] = (avg[i][j] * float(sample - 1) + sm) / float(sample)
+                avg2[i][j] = (avg2[i][j] * float(sample - 1) + sm ** 2.) / float(sample)
+                stdev[i][j][sample] = np.sqrt(abs((avg[i][j] ** 2) - avg2[i][j])) / np.sqrt(float(sample))
     slopes = np.zeros((maxOrder + 1, maxOrder + 1))
     intercepts = np.zeros((maxOrder + 1, maxOrder + 1))
 
