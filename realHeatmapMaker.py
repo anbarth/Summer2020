@@ -3,8 +3,8 @@
 import time
 import random
 import numpy as np
-from sho import shoEigenbra,defectEigenstates
-from myStats import mean,stdev,regress
+from sho import defectEigenstates
+import myStats
 import csv
 import multiprocessing as mp
 
@@ -16,7 +16,7 @@ right = 20
 dx = 0.05
 Nmax = 5000
 cutoff = 1000 # exclusive
-
+numRegressions = 10
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -31,23 +31,26 @@ center = 0
 ### FUNCTION TO BE EXECUTED IN PARALLEL
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
 def regressOnce():
+    print('regress once')
+
     sigma = np.zeros((nMax+1,nMax+1,Nmax))
     avg = np.zeros((nMax+1,nMax+1))
     avg2 = np.zeros((nMax+1,nMax+1))
 
     for N in range(1,Nmax+1):
         zeta = [random.choice([-1,1]) for x in range(D)] # <z|
-        psizeta=np.dot(psi1, zeta) # <psi_n1|z>
-        zetapsi=np.dot(psi2, zeta) # <z|psi_n2>
-        err = psizeta * zetapsi
-        if n1 == n2:
-            err = err-1
 
         for n1 in range(nMax+1):
+            # TODO complex conjugate nonsense
+            psizeta=np.dot(eigens[n1], zeta) # <psi|z>
             for n2 in range(n1,nMax+1):
+                zetaphi=np.dot(eigens[n2], zeta) # <z|phi>
+                err = psizeta * zetaphi # <psi|zeta><zeta|phi>
+                if n1 == n2:
+                    err = err-1
                 avg[n1][n2] = (avg[n1][n2] * (N-1) + err) * 1.0/N
                 avg2[n1][n2] = (avg2[n1][n2] * (N-1) + err*err) *  1.0/N
-                sigma[n1][n2][N-1] = np.sqrt( (avg2 - avg*avg) * 1.0/N )
+                sigma[n1][n2][N-1] = np.sqrt( (avg2[n1][n2] - avg[n1][n2]*avg[n1][n2]) * 1.0/N )
         
     slopes = np.zeros((nMax+1,nMax+1))
     intercepts = np.zeros((nMax+1,nMax+1))
@@ -68,7 +71,8 @@ def regressOnce():
 
     avgIntercept = np.sum(intercepts) / ( (nMax+1) * (nMax+1) )
     intercepts = intercepts - avgIntercept
-
+    
+   
     return (intercepts, slopes, avg)
 
 ### HEATMAP MAKING FUNCTION
@@ -82,7 +86,6 @@ def makeHeatMap():
     pool.join()
 
     # collect the intercepts & slopes of those regressions
-    print(len(regression_results))
     intercepts = [r.get()[0] for r in regression_results]
     slopes = [r.get()[1] for r in regression_results]
     avgOverlaps = [r.get()[2] for r in regression_results]
@@ -100,21 +103,22 @@ def makeHeatMap():
             theseIntercepts = [intercepts[i][n1][n2] for i in range(numRegressions)]
             theseSlopes = [slopes[i][n1][n2] for i in range(numRegressions)]
             theseOverlaps = [avgOverlaps[i][n1][n2] for i in range(numRegressions)]
+            #print(theseIntercepts)
+            #print(myStats.mean(theseIntercepts))
+            intercept_avgs[n1][n2] = myStats.mean(theseIntercepts)
+            intercept_errs[n1][n2] = myStats.stdev(theseIntercepts) / np.sqrt(numRegressions) #TODO to divide or not to divide?
             
-            intercept_avgs[n1][n2] = mean(theseIntercepts)
-            intercept_errs[n1][n2] = stdev(theseIntercepts) / np.sqrt(numRegressions) #TODO to divide or not to divide?
-            
-            slope_avgs[n1][n2] = mean(theseSlopes)
-            slope_errs[n1][n2] = stdev(theseSlopes) / np.sqrt(numRegressions)
+            slope_avgs[n1][n2] = myStats.mean(theseSlopes)
+            slope_errs[n1][n2] = myStats.stdev(theseSlopes) / np.sqrt(numRegressions)
 
-            overlap_avgs[n1][n2] = mean(theseOverlaps)
-            overlap_errs[n1][n2] = stdev(theseOverlaps) / np.sqrt(numRegressions)
+            overlap_avgs[n1][n2] = myStats.mean(theseOverlaps)
+            overlap_errs[n1][n2] = myStats.stdev(theseOverlaps) / np.sqrt(numRegressions)
 
     # write heatmap numbers to csv
     with open('theheatmap.csv','w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
         writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
-        writer.writerow(['max N: '+str(Nmax)+', trials: '+str(numRegressions)+' groups of '+str(a)+" to "+str(b)])
+        writer.writerow(['max N: '+str(Nmax)+', cutoff: '+str(cutoff)+', trials: '+str(numRegressions)])
 
         writer.writerow(['intercepts'])
         for i in range(len(intercept_avgs)):
@@ -142,6 +146,7 @@ def makeHeatMap():
 
 random.seed()
 tic = time.time()
+#regressOnce()
 makeHeatMap()
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
