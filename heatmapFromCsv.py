@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # change these according to your needs
-fname = 'data/july 29/subtractAvg2.csv'
+fname = 'data/july 30/arrayAvg.csv'
+#fname = 'data/july 29/copyAnthony-10x10-dotSlashInverted.csv'
+#fname = 'data/july 29/50x50.csv'
 #fname = 'heatmap.csv'
 nMax = 10
 
@@ -48,10 +50,10 @@ for n1 in range(nMax+1):
 logPercentError = np.zeros((nMax+1,nMax+1))
 for n1 in range(nMax+1):
     for n2 in range(n1,nMax+1):
-        logPercentError[n1][n2] = np.log(np.abs(intercept_errs[n1][n2] / intercepts[n1][n2]))
+        logPercentError[n1][n2] = np.log10(np.abs(intercept_errs[n1][n2] / intercepts[n1][n2]))
 
 fig, ax = plt.subplots()
-im = ax.imshow(intercepts,cmap="nipy_spectral")
+im = ax.imshow(intercepts)#,cmap="nipy_spectral")#,vmin=-0.04, vmax=0.04)
 title = "Intercepts\n"+title
 #im = ax.imshow(intercept_errs)
 #title = "Intercept errors\n"+title
@@ -65,8 +67,8 @@ title = "Intercepts\n"+title
 #title = "Slope sigma off from -0.5\n"+title
 #im = ax.imshow(overlap_errs)
 #title = "Overlap errors\n"+title
-#im = ax.imshow(logPercentError)
-#title = "Intercept log(% error)\n"+title
+#im = ax.imshow(logPercentError, vmin=-1.5, vmax=0.5)
+#title = "Intercept log10(% error)\n"+title
 
 nLabel = []
 for n in range(nMax+1):
