@@ -10,13 +10,13 @@ import multiprocessing as mp
 
 
 ### SET UP
-nMax = 5 # inclusive
+nMax = 50 # inclusive
 left = -20
 right = 20
 dx = 0.05
-Nmax = 5000
+Nmax = 10000
 cutoff = 1000 # exclusive
-numRegressions = 10
+numRegressions = 100
 
 # dimension of discretized position space
 D = int((right-left)/dx)
