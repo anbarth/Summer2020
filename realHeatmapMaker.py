@@ -21,11 +21,7 @@ numRegressions = 500
 # dimension of discretized position space
 D = int((right-left)/dx)
 
-# get all eigenfunctions
-depth = 0
-width = 0
-center = 0
-(energies, eigens) = defectEigenstates(depth,width,center,left,right,dx,0,nMax)
+
 
 
 ### FUNCTION TO BE EXECUTED IN PARALLEL
@@ -76,7 +72,10 @@ def regressOnce():
     return (intercepts, slopes, avg)
 
 ### HEATMAP MAKING FUNCTION
-def makeHeatMap():
+def makeHeatMap(fname,depth,width,center):
+
+    # get all eigenfunctions
+    (energies, eigens) = defectEigenstates(depth,width,center,left,right,dx,0,nMax)
 
     # TODO for the love of god, find a better name than "theseIntercepts" @cs70 smh
     # perform several regressions in parallel
@@ -103,8 +102,7 @@ def makeHeatMap():
             theseIntercepts = [intercepts[i][n1][n2] for i in range(numRegressions)]
             theseSlopes = [slopes[i][n1][n2] for i in range(numRegressions)]
             theseOverlaps = [avgOverlaps[i][n1][n2] for i in range(numRegressions)]
-            #print(theseIntercepts)
-            #print(myStats.mean(theseIntercepts))
+            
             intercept_avgs[n1][n2] = myStats.mean(theseIntercepts)
             intercept_errs[n1][n2] = myStats.stdev(theseIntercepts) / np.sqrt(numRegressions) #TODO to divide or not to divide?
             
@@ -115,7 +113,7 @@ def makeHeatMap():
             overlap_errs[n1][n2] = myStats.stdev(theseOverlaps) / np.sqrt(numRegressions)
 
     # write heatmap numbers to csv
-    with open('theheatmap.csv','w') as csvFile:
+    with open(fname,'w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
         writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
         writer.writerow(['max N: '+str(Nmax)+', cutoff: '+str(cutoff)+', trials: '+str(numRegressions)])
@@ -147,6 +145,6 @@ def makeHeatMap():
 random.seed()
 tic = time.time()
 #regressOnce()
-makeHeatMap()
+makeHeatMap('annaheatmap.csv',0,0,0)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
