@@ -16,14 +16,14 @@ right = 20
 dx = 0.05
 Nmax = 10000
 cutoff = 1000 # exclusive
-numRegressions = 100
+numRegressions = 500
 
 # dimension of discretized position space
 D = int((right-left)/dx)
 
 # get all eigenfunctions
-depth = 100
-width = 1
+depth = 0
+width = 0
 center = 0
 (energies, eigens) = defectEigenstates(depth,width,center,left,right,dx,0,nMax)
 
