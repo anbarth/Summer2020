@@ -10,13 +10,13 @@ import multiprocessing as mp
 
 
 ### SET UP
-nMax = 50 # inclusive
+nMax = 20 # inclusive
 left = -20
 right = 20
 dx = 0.05
 Nmax = 10000
 cutoff = 1000 # exclusive
-numRegressions = 500
+numRegressions = 100
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -26,8 +26,8 @@ D = int((right-left)/dx)
 
 ### FUNCTION TO BE EXECUTED IN PARALLEL
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
-def regressOnce():
-    print('regress once')
+def regressOnce(eigens):
+    #print('regress once')
 
     sigma = np.zeros((nMax+1,nMax+1,Nmax))
     avg = np.zeros((nMax+1,nMax+1))
@@ -80,7 +80,7 @@ def makeHeatMap(fname,depth,width,center):
     # TODO for the love of god, find a better name than "theseIntercepts" @cs70 smh
     # perform several regressions in parallel
     pool = mp.Pool(mp.cpu_count())
-    regression_results = [pool.apply_async(regressOnce,args=[]) for i in range(numRegressions)]
+    regression_results = [pool.apply_async(regressOnce,args=[eigens]) for i in range(numRegressions)]
     pool.close()
     pool.join()
 
@@ -144,7 +144,18 @@ def makeHeatMap(fname,depth,width,center):
 
 random.seed()
 tic = time.time()
-#regressOnce()
-makeHeatMap('annaheatmap.csv',0,0,0)
+makeHeatMap('83run1.csv',100,1,0)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
+
+makeHeatMap('83run2.csv',100,5,0)
+tic = time.time()
+print("runtime (s): "+str(tic-toc))
+
+makeHeatMap('83run3.csv',1000,1,0)
+toc = time.time()
+print("runtime (s): "+str(toc-tic))
+
+makeHeatMap('83run4.csv',10,1,0)
+tic = time.time()
+print("runtime (s): "+str(tic-toc))
