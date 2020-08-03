@@ -13,7 +13,7 @@ import multiprocessing as mp
 nMax = 20 # inclusive
 left = -20
 right = 20
-dx = 0.05
+dx = 0.1
 Nmax = 10000
 cutoff = 1000 # exclusive
 numRegressions = 100
@@ -144,18 +144,18 @@ def makeHeatMap(fname,depth,width,center):
 
 random.seed()
 tic = time.time()
-makeHeatMap('83run1.csv',100,1,0)
+makeHeatMap('83run10.csv',100,1,0)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
 
-makeHeatMap('83run2.csv',100,5,0)
+makeHeatMap('83run11.csv',1000,1,0)
 tic = time.time()
 print("runtime (s): "+str(tic-toc))
 
-makeHeatMap('83run3.csv',1000,1,0)
-toc = time.time()
-print("runtime (s): "+str(toc-tic))
+#makeHeatMap('83run7.csv',10,7.5,0)
+#toc = time.time()
+#print("runtime (s): "+str(toc-tic))
 
-makeHeatMap('83run4.csv',10,1,0)
-tic = time.time()
-print("runtime (s): "+str(tic-toc))
+#makeHeatMap('83run4.csv',10,1,0)
+#tic = time.time()
+#print("runtime (s): "+str(tic-toc))
