@@ -11,8 +11,8 @@ import multiprocessing as mp
 
 ### SET UP
 nMax = 20 # inclusive
-left = -20
-right = 20
+left = -80
+right = 80
 dx = 0.1
 Nmax = 10000
 cutoff = 1000 # exclusive
@@ -144,13 +144,13 @@ def makeHeatMap(fname,depth,width,center):
 
 random.seed()
 tic = time.time()
-makeHeatMap('83run10.csv',100,1,0)
+makeHeatMap('83run12.csv',1000,1,0)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
 
-makeHeatMap('83run11.csv',1000,1,0)
-tic = time.time()
-print("runtime (s): "+str(tic-toc))
+#makeHeatMap('83run11.csv',1000,1,0)
+#tic = time.time()
+#print("runtime (s): "+str(tic-toc))
 
 #makeHeatMap('83run7.csv',10,7.5,0)
 #toc = time.time()
