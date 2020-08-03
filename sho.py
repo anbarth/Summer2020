@@ -13,6 +13,7 @@ def defectEigenstates(depth,width,center,left,right,dx,nMin,nMax):
     for i in range(D):
         pot = x*x
         if x <= center+wing and x >= center-wing:
+            #pot = -1.0*depth
             pot -= depth
         U[i] = pot
         x += dx
