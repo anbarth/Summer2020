@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # change these according to your needs
-fname = 'data/july 30/arrayAvg.csv'
-#fname = 'data/july 29/copyAnthony-10x10-dotSlashInverted.csv'
-#fname = 'data/july 29/50x50.csv'
-#fname = 'heatmap.csv'
-nMax = 10
+#fname = 'data/july 30/arrayAvg.csv'
+#fname = 'data/july 31/731run3.csv'
+fname = 'data/aug 3/83run3.csv'
+#fname = 'theheatmap.csv'
+nMax = 20
 
 title = ""
 
@@ -35,6 +35,11 @@ with open(fname) as csvFile:
 
 
 intercepts = data[0]
+
+for n1 in range(nMax+1):
+    for n2 in range(n1,nMax+1):
+        intercepts[n2][n1] = intercepts[n1][n2]
+
 intercept_errs = data[1]
 slopes = data[2]
 slope_errs = data[3]
@@ -47,27 +52,40 @@ for n1 in range(nMax+1):
     for n2 in range(n1,nMax+1):
         slopeSigmaOff[n1][n2] = (slopes[n1][n2] + 0.5) / slope_errs[n1][n2]
 
+avgSlope = np.sum(slopes) / ((nMax+1)*(nMax+2)/2.0)
+print(avgSlope)
+
 logPercentError = np.zeros((nMax+1,nMax+1))
 for n1 in range(nMax+1):
     for n2 in range(n1,nMax+1):
         logPercentError[n1][n2] = np.log10(np.abs(intercept_errs[n1][n2] / intercepts[n1][n2]))
 
+hideDiagonal = False
+if(hideDiagonal):
+    for i in range(len(intercepts)):
+        intercepts[i][i] = 0
+
+# add 1 back to the diagonal overlaps
+for i in range(len(overlaps)):
+    overlaps[i][i] = overlaps[i][i]+1
+
+
 fig, ax = plt.subplots()
-im = ax.imshow(intercepts)#,cmap="nipy_spectral")#,vmin=-0.04, vmax=0.04)
-title = "Intercepts\n"+title
+#im = ax.imshow(intercepts,vmin=-0.07, vmax=0.03)#,)#cmap="jet",
+#title = "Intercepts\n"+title
 #im = ax.imshow(intercept_errs)
 #title = "Intercept errors\n"+title
 #im = ax.imshow(slopes)
 #title = "Slopes\n"+title
 #im = ax.imshow(slope_errs)
 #title = "Slope errors\n"+title
-#im = ax.imshow(overlaps)
-#title = "Overlaps\n"+title
+im = ax.imshow(overlaps)
+title = "Overlaps\n"+title
 #im = ax.imshow(slopeSigmaOff)
 #title = "Slope sigma off from -0.5\n"+title
 #im = ax.imshow(overlap_errs)
 #title = "Overlap errors\n"+title
-#im = ax.imshow(logPercentError, vmin=-1.5, vmax=0.5)
+#im = ax.imshow(logPercentError)#, vmin=-1.5, vmax=0.5)
 #title = "Intercept log10(% error)\n"+title
 
 nLabel = []
