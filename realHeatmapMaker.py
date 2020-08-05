@@ -1,19 +1,21 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import time
 import random
 import numpy as np
-from sho import defectEigenstates
+import sho
 import myStats
 import csv
 import multiprocessing as mp
+import importlib
 
+importlib.reload(sho)
 
 ### SET UP
 nMax = 20 # inclusive
-left = -80
-right = 80
-dx = 0.1
+left = -20
+right = 20
+dx = 0.05
 Nmax = 10000
 cutoff = 1000 # exclusive
 numRegressions = 100
@@ -75,7 +77,7 @@ def regressOnce(eigens):
 def makeHeatMap(fname,depth,width,center):
 
     # get all eigenfunctions
-    (energies, eigens) = defectEigenstates(depth,width,center,left,right,dx,0,nMax)
+    (energies, eigens) = sho.defectEigenstates(depth,width,center,left,right,dx,0,nMax,0.001)
 
     # TODO for the love of god, find a better name than "theseIntercepts" @cs70 smh
     # perform several regressions in parallel
@@ -144,18 +146,26 @@ def makeHeatMap(fname,depth,width,center):
 
 random.seed()
 tic = time.time()
-makeHeatMap('83run12.csv',1000,1,0)
+makeHeatMap('run1.csv',0,0,0)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
 
-#makeHeatMap('83run11.csv',1000,1,0)
-#tic = time.time()
-#print("runtime (s): "+str(tic-toc))
+makeHeatMap('run2',10,1,0)
+tic = time.time()
+print("runtime (s): "+str(tic-toc))
 
-#makeHeatMap('83run7.csv',10,7.5,0)
-#toc = time.time()
-#print("runtime (s): "+str(toc-tic))
+makeHeatMap('run3.csv',100,1,0)
+toc = time.time()
+print("runtime (s): "+str(toc-tic))
 
-#makeHeatMap('83run4.csv',10,1,0)
-#tic = time.time()
-#print("runtime (s): "+str(tic-toc))
+makeHeatMap('run4.csv',1000,1,0)
+tic = time.time()
+print("runtime (s): "+str(tic-toc))
+
+makeHeatMap('run5.csv',10,5,0)
+toc = time.time()
+print("runtime (s): "+str(toc-tic))
+
+makeHeatMap('run6.csv',10,7.5,0)
+tic = time.time()
+print("runtime (s): "+str(tic-toc))
