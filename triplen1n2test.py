@@ -1,35 +1,36 @@
 import time
 import random
 import numpy as np
-from sho import defectEigenstates
+import sho
 import myStats
 from linReg import regress
 import matplotlib.pyplot as plt
 import csv
 import multiprocessing as mp
-import imp
+import importlib as imp
 
 imp.reload(myStats)
+imp.reload(sho)
 
 tic = time.time()
 random.seed()
 
 ### SET UP
-nPair1 = (1,0)
-nPair2 = (10,10)
-nPair3 = (10,11)
+nPair1 = (2,5)
+nPair2 = (2,15)
+nPair3 = (15,17)
 nPairs = [nPair1,nPair2,nPair3]
 left = -20
 right = 20
 dx = 0.05
 Nmax = 10000
-
+#TODO make cutoff a param
 
 # dimension of discretized position space
 D = int((right-left)/dx)
 
 # get all eigenfunctions
-(E,psi) = defectEigenstates(0,0,0,left,right,dx,0,max(nPair1+nPair2+nPair3))
+(E,psi) = sho.defectEigenstates(1000,1,0,left,right,dx,0,max(nPair1+nPair2+nPair3),0.001)
 
 ### THE MEAT
 sigma = np.zeros((len(nPairs),Nmax))

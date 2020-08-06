@@ -2,6 +2,53 @@ import numpy as np
 import math
 from scipy.linalg import eigh,eigh_tridiagonal
 
+def cakeEigenstates(d1,d2,w1,w2,center,left,right,dx,nMin,nMax,dx_solve):
+    # dimension of discretized position space in which we SOLVE
+    D_solve = int((right-left)/dx_solve)
+    wing1 = w1*1/2.0
+    wing2 = w2*1/2.0
+
+
+    # define U
+    U = np.zeros((D_solve))
+    x = left
+    for i in range(D_solve):
+        pot = 0
+        if x >= -1*wing1 and x <= wing1:
+            pot -= d1
+            if x >= center-wing2 and x <= center+wing2:
+                pot -= d2
+        U[i] = pot
+        x += dx_solve
+
+    # construct H
+    diag = U + 2/(dx_solve*dx_solve)
+    tridiag = [-1.0/(dx_solve*dx_solve)] * (D_solve-1)
+
+    #(E,psi_smooth) = eigh(ham,eigvals=(nMin,nMax+1))
+    (E,psi_smooth) = eigh_tridiagonal(diag,tridiag,select='i',select_range=(nMin,nMax))
+    psi_smooth = np.transpose(psi_smooth)
+
+    # now that it's been solved in the less discretized space,
+    # transfer the wavefxns into the more discretized space
+    D = int((right-left)/dx)
+    psi = np.zeros((nMax-nMin+1,D))
+    for i in range(D):
+        pos = int(i*dx * 1.0/dx_solve)
+        for j in range(len(psi)):
+            psi[j][i] = psi_smooth[j][pos]
+
+    # finally, normalize each wavefxn
+    for i in range(len(psi)):
+        norm2 = 0
+        for j in range(D):
+            norm2 += psi[i][j]*psi[i][j]
+        # normalize
+        psi[i] = psi[i]*(1/math.sqrt(norm2))
+
+    return (E,psi)
+
+
 def defectEigenstates(depth,width,center,left,right,dx,nMin,nMax,dx_solve):
     # dimension of discretized position space in which we SOLVE
     D_solve = int((right-left)/dx_solve)
