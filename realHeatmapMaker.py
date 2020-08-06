@@ -117,7 +117,7 @@ def makeHeatMap(fname,depth,width,center):
     # write heatmap numbers to csv
     with open(fname,'w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
-        writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']'])
+        writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']',str(depth),str(width),str(center)])
         writer.writerow(['max N: '+str(Nmax)+', cutoff: '+str(cutoff)+', trials: '+str(numRegressions)])
 
         writer.writerow(['intercepts'])
@@ -146,26 +146,26 @@ def makeHeatMap(fname,depth,width,center):
 
 random.seed()
 tic = time.time()
-makeHeatMap('run1.csv',0,0,0)
+makeHeatMap('run16.csv',10,1,0)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
 
-makeHeatMap('run2',10,1,0)
+makeHeatMap('run17.csv',100,1,0)
 tic = time.time()
 print("runtime (s): "+str(tic-toc))
 
-makeHeatMap('run3.csv',100,1,0)
+makeHeatMap('run18.csv',1000,1,0)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
 
-makeHeatMap('run4.csv',1000,1,0)
+makeHeatMap('run19.csv',10,1,-1)
 tic = time.time()
 print("runtime (s): "+str(tic-toc))
 
-makeHeatMap('run5.csv',10,5,0)
+makeHeatMap('run20.csv',10,1,1)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
 
-makeHeatMap('run6.csv',10,7.5,0)
-tic = time.time()
-print("runtime (s): "+str(tic-toc))
+#makeHeatMap('run12.csv',10,7.5,0)
+#tic = time.time()
+#print("runtime (s): "+str(tic-toc))
