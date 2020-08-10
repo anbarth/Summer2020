@@ -15,10 +15,10 @@ importlib.reload(sho)
 nMax = 20 # inclusive
 left = -20
 right = 20
-dx = 0.05
+dx = 0.025
 Nmax = 10000
 cutoff = 1000 # exclusive
-numRegressions = 100
+numRegressions = 50
 
 # dimension of discretized position space
 D = int((right-left)/dx)
@@ -146,26 +146,26 @@ def makeHeatMap(fname,depth,width,center):
 
 random.seed()
 tic = time.time()
-makeHeatMap('run16.csv',10,1,0)
+makeHeatMap('run1.csv',1000,1,0)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
 
-makeHeatMap('run17.csv',100,1,0)
-tic = time.time()
-print("runtime (s): "+str(tic-toc))
-
-makeHeatMap('run18.csv',1000,1,0)
-toc = time.time()
-print("runtime (s): "+str(toc-tic))
-
-makeHeatMap('run19.csv',10,1,-1)
-tic = time.time()
-print("runtime (s): "+str(tic-toc))
-
-makeHeatMap('run20.csv',10,1,1)
-toc = time.time()
-print("runtime (s): "+str(toc-tic))
-
-#makeHeatMap('run12.csv',10,7.5,0)
+#makeHeatMap('run2.csv',100,1,5)
 #tic = time.time()
 #print("runtime (s): "+str(tic-toc))
+
+'''makeHeatMap('run3.csv',50,1,7)
+toc = time.time()
+print("runtime (s): "+str(toc-tic))
+
+makeHeatMap('run4.csv',50,2,0)
+tic = time.time()
+print("runtime (s): "+str(tic-toc))
+
+makeHeatMap('run20.csv',50,2,5)
+toc = time.time()
+print("runtime (s): "+str(toc-tic))
+
+makeHeatMap('run12.csv',50,2,7)
+tic = time.time()
+print("runtime (s): "+str(tic-toc))'''
