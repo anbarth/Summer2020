@@ -15,20 +15,18 @@ importlib.reload(sho)
 nMax = 20 # inclusive
 left = -20
 right = 20
-dx = 0.025
+#dx = 0.1
 Nmax = 10000
 cutoff = 1000 # exclusive
-numRegressions = 50
+numRegressions = 100
 
-# dimension of discretized position space
-D = int((right-left)/dx)
 
 
 
 
 ### FUNCTION TO BE EXECUTED IN PARALLEL
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
-def regressOnce(eigens):
+def regressOnce(eigens,D):
     #print('regress once')
 
     sigma = np.zeros((nMax+1,nMax+1,Nmax))
@@ -74,15 +72,19 @@ def regressOnce(eigens):
     return (intercepts, slopes, avg)
 
 ### HEATMAP MAKING FUNCTION
-def makeHeatMap(fname,depth,width,center):
+def makeHeatMap(fname,depth,width,center,dx):
+
+    # dimension of discretized position space
+    D = int((right-left)/dx)
 
     # get all eigenfunctions
-    (energies, eigens) = sho.defectEigenstates(depth,width,center,left,right,dx,0,nMax,0.001)
+    #(energies, eigens) = sho.defectEigenstates(depth,width,center,left,right,dx,0,nMax,0.001)
+    (energies, eigens) = sho.wellEigenstates(depth,width,center,left,right,dx,0,nMax,0.001)
 
     # TODO for the love of god, find a better name than "theseIntercepts" @cs70 smh
     # perform several regressions in parallel
     pool = mp.Pool(mp.cpu_count())
-    regression_results = [pool.apply_async(regressOnce,args=[eigens]) for i in range(numRegressions)]
+    regression_results = [pool.apply_async(regressOnce,args=[eigens,D]) for i in range(numRegressions)]
     pool.close()
     pool.join()
 
@@ -146,26 +148,26 @@ def makeHeatMap(fname,depth,width,center):
 
 random.seed()
 tic = time.time()
-makeHeatMap('run1.csv',1000,1,0)
+makeHeatMap('run12.csv',50,4,0,1)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
 
-#makeHeatMap('run2.csv',100,1,5)
-#tic = time.time()
-#print("runtime (s): "+str(tic-toc))
-
-'''makeHeatMap('run3.csv',50,1,7)
-toc = time.time()
-print("runtime (s): "+str(toc-tic))
-
-makeHeatMap('run4.csv',50,2,0)
+makeHeatMap('run13.csv',50,4,0,0.5)
 tic = time.time()
 print("runtime (s): "+str(tic-toc))
 
-makeHeatMap('run20.csv',50,2,5)
+makeHeatMap('run14.csv',50,4,0,0.2)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
 
-makeHeatMap('run12.csv',50,2,7)
+makeHeatMap('run15.csv',50,4,0,0.1)
 tic = time.time()
-print("runtime (s): "+str(tic-toc))'''
+print("runtime (s): "+str(tic-toc))
+
+makeHeatMap('run16.csv',50,4,0,0.05)
+toc = time.time()
+print("runtime (s): "+str(toc-tic))
+
+makeHeatMap('run17.csv',50,4,0,0.025)
+tic = time.time()
+print("runtime (s): "+str(tic-toc))
