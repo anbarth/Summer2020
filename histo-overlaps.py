@@ -5,13 +5,17 @@ import math
 import time
 import matplotlib.pyplot as plt
 import statistics
-from sho import shoEigenbra, shoEigenket
+import sho
+import importlib
+importlib.reload(sho)
 
-# estimates the overlap using N stochastic vectors
-# does that many time (specified # of trials)
-# shows the histogram of overlap estimations
-# see july 1 log for many example outputs!
-def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,timing=True,fname='newfig.png'):
+# this script produces a histogram representing one set of N stochastic vectors, calculating one inner product
+
+def makeOverlapsHisto(n1,n2,left,right,dx,N,fname='newfig.png'):
+    ''' takes N samples to estimate the overlap between eigenstates n1 and n2
+        position space bounded by [left, right], with mesh size dx
+        outputs a histogram of <n1|zeta><zeta|n2> values '''
+
     ### STEP 1: SET UP
     tic = time.perf_counter()
     plt.clf()
@@ -20,44 +24,41 @@ def makeOverlapsHisto(n1,n2,left,right,dx,N,trials,showGraph=True,timing=True,fn
     D = int((right-left)/dx)
 
     # get the appropriate eigenstates
-    psi = shoEigenket(n1,dx,left,right)
-    phi = shoEigenbra(n1,dx,left,right)
+    # note that dx_solve and all the defect parameters are hardcoded in here!
+    # they dont appear elsewhere in the code, so just changing the values here will be fine
+    (E,eigen) = sho.defectEigenstates(0,0,0,left,right,min(n1,n2),max(n1,n2),dx,0.001)
+    psi = eigen[0]
+    phi = eigen[-1]
   
-    ### STEP 2: CALCULATE OVERLAP MANY TIMES
+    ### STEP 2: TAKE SAMPLES
     overlaps = []
-    for j in range(trials):
-        # calculate the overlap using N random vectors
-        runningTot = 0
-        for i in range(N):
-            zeta = [[random.choice([-1,1])] for i in range(D)] # |z>
-            phizeta = np.matmul(phi, zeta) # <phi|z>
-            zetapsi = np.matmul(np.transpose(zeta), psi) # <z|psi>
-            prod = phizeta * zetapsi
-            runningTot = runningTot + prod
-        runningTot = runningTot*(1/N) 
-        overlaps.append(runningTot[0][0])
+    for j in range(N):
+        zeta = [random.choice([-1,1]) for i in range(D)] # |z>
+        phizeta = np.vdot(phi, zeta) # <phi|z>
+        zetapsi = np.vdot(zeta, psi) # <z|psi>
+        prod = phizeta * zetapsi
+        overlaps.append(prod)
 
     ### STEP 3: OUTPUT
-    if timing:
-        toc = time.perf_counter()
-        print("runtime "+str(toc-tic))
+    # print runtime
+    toc = time.perf_counter()
+    print("runtime "+str(toc-tic))
 
-    if showGraph:
-        sigma = int( statistics.stdev(resultsTable)*1000 ) / 1000
-        plt.hist(resultsTable, bins='auto')
-        plt.figtext(.7,.75,'sigma='+str(sigma))
-        plt.savefig(fname)
-        #plt.show()
+    # make plot
+    avg = int( statistics.mean(overlaps)*1000 ) / 1000
+    sigma = int( statistics.stdev(overlaps)*1000 ) / 1000
+    plt.hist(overlaps, bins='auto')
+    plt.figtext(.7,.75,'avg='+str(avg)+'\nsigma='+str(sigma))
+    plt.savefig(fname)
+    plt.show()
 
-n1=1
+# parameters
+n1=0
 n2=1
 left=-20
 right=20
-dx=0.05
-N=50
-trialsList=[25,50,100,500]
+dx=0.2
+N=50000
+filename = 'data/aug 14/0x0x0-0-1'
 
-for trials in trialsList:
-    for i in range(3):
-        filename = 'n50t'+str(trials)+'_'+str(i)+'.png'
-        makeOverlapsHisto(n1,n2,left,right,dx,N,trials,fname=filename)
+makeOverlapsHisto(n1,n2,left,right,dx,N,fname=filename)

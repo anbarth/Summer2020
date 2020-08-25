@@ -1,67 +1,65 @@
 from scipy.linalg import eigh
 import numpy as np
 import matplotlib.pyplot as plt
-#from sho import defectEigenstates, shoEigenbra, shoEigenket
 import sho
 import importlib
-
 importlib.reload(sho)
+
+# this script displays an energy level diagram
+
+############### INPUTS ##################
+
+# bounds of position space
 left = -15
 right = 15
+
+# mesh to put wavefunctions on
 dx = 0.05
-# dimension of discretized position space
-D = int((right-left)/dx)
+D = int((right-left)/dx) # dimension
 domain = np.linspace(left,right,D,endpoint=False)
 
-depth = 50
-width = 2
-center = 7
-
-plotLeft = -15
-plotRight = 15
-plotBot = -10
-plotTop = 40
-
-
-nMax = 20
-nMin = 0
+# mesh to solve on
+dx_solve = 0.001
+D_solve = int((right-left)/dx_solve) # dimension
+domain_solve = np.linspace(left,right,D_solve,endpoint=False)
 
 # define U
-wing = width/2.0
-U = np.zeros((D))
-x = left
-for i in range(D):
-    pot = x*x
-    #pot = 0
-    if x <= center+wing and x >= center-wing:
-        #pot = -1.0*depth
-        pot -= depth
-    U[i] = pot
-    x += dx
+# see sho.py for lots of potentials to choose from
+depth = 5
+width = 3
+center = 0
+U = sho.defectPotential(depth,width,center,left,right,dx_solve)
+#U = sho.flatDefectPotential(depth,width,center,left,right,dx_solve)
 
+# eigenstates to solve for
+nMax = 30
+nMin = 0
 
-(E,psi) = sho.defectEigenstates(depth,width,center,left,right,dx,nMin,nMax,0.001)
-#(E,psi) = sho.squareWellEigenstates(depth,left,right,dx,nMin,nMax,0.001)
+# plot bounds
+plotLeft = -4
+plotRight = 4
+plotBot = -6
+plotTop = 9
 
+##################################################
+
+# get eigenstates
+(E,psi) = sho.potentialEigenstates(U,nMin,nMax,left,right,dx,dx_solve)
+
+# set up plot
 plt.clf()
 plt.xlim(plotLeft,plotRight)
 plt.ylim(plotBot,plotTop)
-#plt.ylim(-315,-300)
 
-plt.plot(domain,U)
+# plot potential & wavefunctions
+plt.plot(domain_solve,U,linewidth=2,color='gray')
 for n in range(nMin,nMax+1):
-    psi_reg = sho.shoEigenket(n,dx,left,right)
-    plt.plot(domain,[E[n-nMin]]*D,color='orange')
-    if psi[n-nMin][int(D/6)] < 0:
-        psi[n-nMin] = psi[n-nMin] * -1
-    if psi_reg[int(D/6)] < 0:
-        psi_reg = psi_reg * -1
-    #psi[n-nMin] = psi[n-nMin]*3
-    #psi_reg = psi_reg*3
-    plt.plot(domain,3*psi[n-nMin]+E[n-nMin],color='black')
-    #plt.plot(domain,3*psi_reg+E[n-nMin],color='green')
+    #plt.plot(domain,[E[n-nMin]]*D,color='orange')
+    plt.plot(domain,5*psi[n-nMin]+E[n-nMin],color='black')
 
 
+plt.xlabel('Position')
+plt.ylabel('Potential energy')
 plt.show()
 
 

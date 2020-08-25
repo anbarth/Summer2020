@@ -1,6 +1,6 @@
 import math
 
-# anna's homemade stats package!
+# anna's homemade stats package
 
 # gives the mean of an iterable
 def mean(L):
@@ -10,7 +10,7 @@ def mean(L):
     return tot/len(L)
 
 # gives the standard deviation of an iterable
-# sample standard deviation, not population!
+# _sample_ standard deviation, not population!
 def stdev(L):
     if len(L) < 2:
         return -1
@@ -24,7 +24,7 @@ def stdev(L):
 # does a linear regression on x_arr (independent) and y_arr (dependent)
 # output: slope, intercept, R^2, error on slope, error on intercept
 # NOTE i am somewhat suspicious of the formula for intercept uncertainty used here (see july 20 log)
-def regress(x_arr, y_arr,slope=False):
+def regress(x_arr, y_arr):
     
     y_bar = mean(y_arr)
     x_bar = mean(x_arr)
@@ -56,6 +56,8 @@ def regress(x_arr, y_arr,slope=False):
 
     return (m, b, R2, sm, sb)
 
+# does a linear regression on x_arr (independent) and y_arr (dependent), fixing the slope value
+# returns the slope (as given), the intercept, and the R^2
 def regressFixedSlope(x_arr,y_arr,slope):
 
     y_bar = mean(y_arr)

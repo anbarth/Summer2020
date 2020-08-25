@@ -8,49 +8,64 @@ import myStats
 import csv
 import multiprocessing as mp
 import importlib
-
 importlib.reload(sho)
 
-### SET UP
-nMax = 20 # inclusive
-left = -20
-right = 20
-#dx = 0.1
-Nmax = 10000
-cutoff = 1000 # exclusive
-numRegressions = 100
+# this script is the main event!
+# it gets the data to produce heatmaps of intercepts, slopes, and inner products
+
+##### SET UP #####
+# set parameters that stay the same for all heatmaps in this run 
+nMax = 20 # max energy level to include (inclusive)
+
+left = -20 # bounds of position space
+right = 20 # bounds of position space
+
+# in a past version of the code, i would just keep dx constant for all the heatmaps in a run
+# most recently, i was playing with mesh size a lot, so now it's a parameter in makeHeatMap
+#dx = 0.1 # mesh size to store wavefunctions on
+dx_solve = 0.001 # mesh size to solve on
+
+Nmax = 10000 # number of samples
+cutoff = 1000 # lowest value of N to include in the linear regression (exclusive)s
+numRegressions = 100 # number of sets of N stochastic vectors
 
 
 
+##### FUNCTION TO BE EXECUTED IN PARALLEL #####
 
-
-### FUNCTION TO BE EXECUTED IN PARALLEL
 # makes one ln(sigma) vs ln(N) plot for each (n1,n2), performs one regression per (n1,n2)
 def regressOnce(eigens,D):
-    #print('regress once')
 
-    sigma = np.zeros((nMax+1,nMax+1,Nmax))
-    avg = np.zeros((nMax+1,nMax+1))
-    avg2 = np.zeros((nMax+1,nMax+1))
+    # for each pair of states, keep track of...
+    sigma = np.zeros((nMax+1,nMax+1,Nmax)) # standard error, at every step
+    avg = np.zeros((nMax+1,nMax+1)) # running average
+    avg2 = np.zeros((nMax+1,nMax+1)) # running average^2
 
+    ### take samples
     for N in range(1,Nmax+1):
         zeta = [random.choice([-1,1]) for x in range(D)] # <z|
 
+        # go thru all (n1,n2) pairs and find <n1|zeta><zeta|n2>
         for n1 in range(nMax+1):
             # TODO complex conjugate nonsense
-            psizeta=np.dot(eigens[n1], zeta) # <psi|z>
+            psizeta=np.vdot(eigens[n1], zeta) # <psi|z>
             for n2 in range(n1,nMax+1):
-                zetaphi=np.dot(eigens[n2], zeta) # <z|phi>
+                zetaphi=np.vdot(zeta, eigens[n2]) # <z|phi>
                 err = psizeta * zetaphi # <psi|zeta><zeta|phi>
+
+                # subtract 1 on the diagonal
                 if n1 == n2:
                     err = err-1
+                
                 avg[n1][n2] = (avg[n1][n2] * (N-1) + err) * 1.0/N
                 avg2[n1][n2] = (avg2[n1][n2] * (N-1) + err*err) *  1.0/N
                 sigma[n1][n2][N-1] = np.sqrt( (avg2[n1][n2] - avg[n1][n2]*avg[n1][n2]) * 1.0/N )
         
+    ### time to regress...
     slopes = np.zeros((nMax+1,nMax+1))
     intercepts = np.zeros((nMax+1,nMax+1))
 
+    # go through all (n1,n2) pairs
     for n1 in range(nMax+1):
         for n2 in range(n1,nMax+1):
             lnN = [np.log(N) for N in range(cutoff+1,Nmax+1)]
@@ -65,30 +80,30 @@ def regressOnce(eigens,D):
                 slopes[n2][n1] = slope
                 intercepts[n2][n1] = intercept
 
+    # subtract out the average intercept
+    # because we only really care about which lines are higher and which ones are lower
     avgIntercept = np.sum(intercepts) / ( (nMax+1) * (nMax+1) )
     intercepts = intercepts - avgIntercept
     
-   
     return (intercepts, slopes, avg)
 
-### HEATMAP MAKING FUNCTION
+##### HEATMAP MAKING FUNCTION #####
 def makeHeatMap(fname,depth,width,center,dx):
 
     # dimension of discretized position space
     D = int((right-left)/dx)
 
     # get all eigenfunctions
-    #(energies, eigens) = sho.defectEigenstates(depth,width,center,left,right,dx,0,nMax,0.001)
-    (energies, eigens) = sho.wellEigenstates(depth,width,center,left,right,dx,0,nMax,0.001)
+    (energies, eigens) = sho.defectEigenstates(depth,width,center,left,right,0,nMax,dx,dx_solve)
+    #(energies, eigens) = sho.wellEigenstates(depth,width,center,left,right,0,nMax,dx,dx_solve)
 
-    # TODO for the love of god, find a better name than "theseIntercepts" @cs70 smh
     # perform several regressions in parallel
     pool = mp.Pool(mp.cpu_count())
     regression_results = [pool.apply_async(regressOnce,args=[eigens,D]) for i in range(numRegressions)]
     pool.close()
     pool.join()
 
-    # collect the intercepts & slopes of those regressions
+    # collect the intercepts, slopes, and overlaps of those regressions
     intercepts = [r.get()[0] for r in regression_results]
     slopes = [r.get()[1] for r in regression_results]
     avgOverlaps = [r.get()[2] for r in regression_results]
@@ -108,7 +123,7 @@ def makeHeatMap(fname,depth,width,center,dx):
             theseOverlaps = [avgOverlaps[i][n1][n2] for i in range(numRegressions)]
             
             intercept_avgs[n1][n2] = myStats.mean(theseIntercepts)
-            intercept_errs[n1][n2] = myStats.stdev(theseIntercepts) / np.sqrt(numRegressions) #TODO to divide or not to divide?
+            intercept_errs[n1][n2] = myStats.stdev(theseIntercepts) / np.sqrt(numRegressions)
             
             slope_avgs[n1][n2] = myStats.mean(theseSlopes)
             slope_errs[n1][n2] = myStats.stdev(theseSlopes) / np.sqrt(numRegressions)
@@ -116,7 +131,7 @@ def makeHeatMap(fname,depth,width,center,dx):
             overlap_avgs[n1][n2] = myStats.mean(theseOverlaps)
             overlap_errs[n1][n2] = myStats.stdev(theseOverlaps) / np.sqrt(numRegressions)
 
-    # write heatmap numbers to csv
+    # write heatmap data to csv
     with open(fname,'w') as csvFile:
         writer = csv.writer(csvFile,delimiter=',')
         writer.writerow(['dx='+str(dx)+' over ['+str(left)+','+str(right)+']',str(depth),str(width),str(center)])
@@ -148,6 +163,9 @@ def makeHeatMap(fname,depth,width,center,dx):
 
 random.seed()
 tic = time.time()
+
+# make multiple heatmaps!
+
 makeHeatMap('run12.csv',50,4,0,1)
 toc = time.time()
 print("runtime (s): "+str(toc-tic))
