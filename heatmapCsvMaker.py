@@ -14,7 +14,9 @@ importlib.reload(sho)
 # it gets the data to produce heatmaps of intercepts, slopes, and inner products
 
 ##### SET UP #####
+
 # set parameters that stay the same for all heatmaps in this run 
+
 nMax = 20 # max energy level to include (inclusive)
 
 left = -20 # bounds of position space

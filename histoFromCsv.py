@@ -10,6 +10,7 @@ figname = 'data/aug 17/histo-run1' # save to this file (if saveFig is True)
 saveFig = True
 
 # the max n in the file you're reading
+# SET THIS MANUALLY!! otherwise, it'll crash
 nMax = 20
 # the max n to include in the histogram
 nMax_disp = nMax

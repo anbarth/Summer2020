@@ -10,6 +10,7 @@ figname = 'data/aug 18/run10.png' # save to this file (if saveFig is True)
 saveFig = False
 
 # the max n in the file you're reading
+# SET THIS MANUALLY!! otherwise, it'll crash
 nMax = 20
 # the max n to display on the intercepts heatmap
 nMax_disp = nMax
